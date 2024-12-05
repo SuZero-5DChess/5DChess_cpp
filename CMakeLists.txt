@@ -8,10 +8,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(SOURCE_FILES
         src/core/Board.cpp
         src/core/Piece.cpp
+        src/core/Timeline.cpp
+        src/core/Universe.cpp
+        src/game/Game.cpp
+        src/Main.cpp
 )
 
 include_directories(
         src/core
+        src/game
         src/utils
 )
 

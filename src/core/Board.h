@@ -15,6 +15,7 @@ public:
 
     std::shared_ptr<Piece> getPiece(int x, int y) const;
     void setPiece(int x, int y, std::shared_ptr<Piece> piece);
+    void deletePiece(int x, int y);
 
     void printBoard() const;
 

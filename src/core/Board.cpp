@@ -8,6 +8,7 @@ Board::Board() {
 Board::~Board() {}
 
 void Board::initialize() {
+    // TODO: Initialize
 }
 
 std::shared_ptr<Piece> Board::getPiece(int x, int y) const {
@@ -22,6 +23,11 @@ void Board::setPiece(int x, int y, std::shared_ptr<Piece> piece) {
         grid_[x][y] = piece;
     }
 }
+
+void Board::deletePiece(int x, int y) {
+    grid_[x][y] = nullptr;
+}
+
 
 void Board::printBoard() const {
     for (int y = BOARD_SIZE - 1; y >= 0; --y) {
