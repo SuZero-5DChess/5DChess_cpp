@@ -1,24 +1,26 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include "Board.h"
+
+class Universe;
 
 class Timeline {
 public:
-    Timeline();
+    Timeline(Universe* universe, Board* parent);
     ~Timeline();
 
     void initialize();
 
-    void addBoardState(const Board& board);
+    void addBoardState(const std::shared_ptr<Board> board);
 
-    Board getBoardState(int index) const;
+    std::shared_ptr<Board> getBoardState(int index) const;
 
     int getLength() const;
 
 private:
-    std::vector<Board> boards_;
-    Board parent_;
-    int height_;
+    Universe* universe_;
+    std::vector<std::shared_ptr<Board>> boards_;
+    Board* parent_;
+    int w_;
 };

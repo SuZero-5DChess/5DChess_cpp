@@ -1,7 +1,7 @@
 #include "Piece.h"
 
-Piece::Piece(PieceType type, ColorType color)
-    : type_(type), color_(color) {}
+Piece::Piece(PieceType type, ColorType color, Universe* universe)
+    : type_(type), color_(color), universe_(universe) {}
 
 Piece::~Piece() {}
 
@@ -23,4 +23,8 @@ std::string Piece::getSymbol() const {
         case PieceType::King: return color_ == ColorType::White ? "K" : "k";
         default: return " ";
     }
+}
+
+Vector Piece::getXYZW() const {
+    return pos_xyzw_;
 }

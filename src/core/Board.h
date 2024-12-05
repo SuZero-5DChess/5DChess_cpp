@@ -4,11 +4,12 @@
 #include <memory>
 #include "Piece.h"
 
+class Universe;
 const int BOARD_SIZE = 8;
 
 class Board {
 public:
-    Board();
+    Board(Universe* universe);
     ~Board();
 
     void initialize();
@@ -20,5 +21,7 @@ public:
     void printBoard() const;
 
 private:
+    Universe* universe_;
     std::vector<std::vector<std::shared_ptr<Piece>>> grid_;
+    Vector pos_zw;
 };

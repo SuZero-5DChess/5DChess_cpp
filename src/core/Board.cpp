@@ -1,7 +1,8 @@
 #include "Board.h"
 #include <iostream>
+#include <Universe.h>
 
-Board::Board() {
+Board::Board(Universe* universe): universe_(universe) {
     grid_.resize(BOARD_SIZE, std::vector<std::shared_ptr<Piece>>(BOARD_SIZE, nullptr));
 }
 
@@ -15,7 +16,7 @@ std::shared_ptr<Piece> Board::getPiece(int x, int y) const {
     if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE) {
         return grid_[x][y];
     }
-    return nullptr;
+    return universe_->returnNotFound();
 }
 
 void Board::setPiece(int x, int y, std::shared_ptr<Piece> piece) {

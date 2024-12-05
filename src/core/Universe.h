@@ -9,12 +9,17 @@ public:
     Universe();
     ~Universe();
 
-    void addTimeline(const Timeline& timeline);
+    std::shared_ptr<Piece> returnNotFound() const;
 
-    Timeline getTimeline(int index) const;
+    void addTimeline(const std::shared_ptr<Timeline> timeline);
+
+    std::shared_ptr<Timeline> getTimeline(int index) const;
 
     int getTimelineCount() const;
 
+    std::shared_ptr<Piece> getPiece(Vector xyzw) const;
+
 private:
-    std::vector<Timeline> timelines_;
+    std::vector<std::shared_ptr<Timeline>> timelines_;
+    std::shared_ptr<Piece> notfound_;
 };
