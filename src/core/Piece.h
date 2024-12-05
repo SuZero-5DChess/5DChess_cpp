@@ -28,13 +28,18 @@ public:
     PieceType getType() const;
     ColorType getColor() const;
     std::string getSymbol() const;
+    void setXYZW(Vector xyzw);
     Vector getXYZW() const;
 
+    void setValidMoves(std::vector<Vector> validMoves);
     virtual std::vector<Vector> getValidMoves() const = 0;
+    void appendValidMoves(std::vector<Vector> validMoves);
+    void removeValidMoves(std::vector<Vector> validMoves);
 
 protected:
     Universe* universe_;
     PieceType type_;
     ColorType color_;
     Vector pos_xyzw_;
+    std::vector<Vector> validMoves_;
 };

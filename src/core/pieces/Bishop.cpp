@@ -9,44 +9,96 @@ Bishop::Bishop(ColorType color, Universe* universe)
 
 Bishop::~Bishop() {}
 
-std::vector<Vector> Bishop::getValidMoves() const {
+void Bishop::downdateDirection(Vector start, Vector direction) {
     Vector pos = getXYZW();
     ColorType color = getColor();
 
-    std::vector<Vector> directions = {
-        Vector{1, 1, 0, 0},
-        Vector{-1, 1, 0, 0},
-        Vector{1, -1, 0, 0},
-        Vector{-1, -1, 0, 0},
+    std::vector<Vector> validMoves;
+    validMoves.push_back(start);
 
-        Vector{1, 0, 1, 0},
-        Vector{1, 0, -1, 0},
-        Vector{-1, 0, 1, 0},
-        Vector{-1, 0, -1, 0},
+    bool isCrossBlank = false;
+    Vector current_target = start + direction;
 
-        Vector{0, 0, 1, 1},
-        Vector{0, 0, -1, 1},
-        Vector{0, 0, 1, -1},
-        Vector{0, 0, -1, -1},
+    while (true) {
+        std::shared_ptr<Piece> piece = universe_->getPiece(current_target);
+        if (piece == nullptr) {
+            validMoves.push_back(current_target);
+            current_target = current_target + direction;
+            if (isCrossBlank) {
+                universe_->addCrossBlankPiece(pos, Vector{current_target[2], current_target[3]});
+            }
+        }
+        else if (piece->getType() != PieceType::NotFound && piece->getColor() != color) {
+            validMoves.push_back(current_target);
+            if (isCrossBlank) {
+                universe_->addCrossBlankPiece(pos, Vector{current_target[2], current_target[3]});
+            }
+            break;
+        }
+        else {
+            if (piece->getType() == PieceType::NotFound
+                && direction[3] != 0
+                && universe_->getTimeline(current_target[3]) != nullptr) {
+                isCrossBlank = true;
+            }
+            else {
+                break;
+            }
+        }
+    }
 
-        Vector{0, 1, 1, 0},
-        Vector{0, 1, -1, 0},
-        Vector{0, -1, 1, 0},
-        Vector{0, -1, -1, 0},
+    removeValidMoves(validMoves);
+}
 
-        Vector{0, 1, 0, 1},
-        Vector{0, -1, 0, 1},
-        Vector{0, 1, 0, -1},
-        Vector{0, -1, 0, -1},
+void Bishop::updateDirection(Vector start, Vector direction) {
+    Vector pos = getXYZW();
+    ColorType color = getColor();
 
-        Vector{0, 0, 1, 1},
-        Vector{0, 0, -1, 1},
-        Vector{0, 0, 1, -1},
-        Vector{0, 0, -1, -1},
-    };
+    std::vector<Vector> validMoves;
+    validMoves.push_back(start);
+
+    bool isCrossBlank = false;
+    Vector current_target = start + direction;
+
+    while (true) {
+        std::shared_ptr<Piece> piece = universe_->getPiece(current_target);
+        if (piece == nullptr) {
+            validMoves.push_back(current_target);
+            current_target = current_target + direction;
+            if (isCrossBlank) {
+                universe_->addCrossBlankPiece(pos, Vector{current_target[2], current_target[3]});
+            }
+        }
+        else if (piece->getType() != PieceType::NotFound && piece->getColor() != color) {
+            validMoves.push_back(current_target);
+            if (isCrossBlank) {
+                universe_->addCrossBlankPiece(pos, Vector{current_target[2], current_target[3]});
+            }
+            break;
+        }
+        else {
+            if (piece->getType() == PieceType::NotFound
+                && direction[3] != 0
+                && universe_->getTimeline(current_target[3]) != nullptr) {
+                isCrossBlank = true;
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    appendValidMoves(validMoves);
+}
+
+
+std::vector<Vector> Bishop::getValidMoves() const {
+    Vector pos = getXYZW();
+    ColorType color = getColor();
     std::vector<Vector> validMoves;
 
-    for (const auto& direction: directions) {
+    for (const auto& direction: bishopDirections) {
+        bool isCrossBlank = false;
         Vector current_target = pos + direction;
 
         while (true) {
@@ -54,13 +106,26 @@ std::vector<Vector> Bishop::getValidMoves() const {
             if (piece == nullptr) {
                 validMoves.push_back(current_target);
                 current_target = current_target + direction;
+                if (isCrossBlank) {
+                    universe_->addCrossBlankPiece(pos, Vector{current_target[2], current_target[3]});
+                }
             }
             else if (piece->getType() != PieceType::NotFound && piece->getColor() != color) {
                 validMoves.push_back(current_target);
+                if (isCrossBlank) {
+                    universe_->addCrossBlankPiece(pos, Vector{current_target[2], current_target[3]});
+                }
                 break;
             }
             else {
-                break;
+                if (piece->getType() == PieceType::NotFound
+                    && direction[3] != 0
+                    && universe_->getTimeline(current_target[3]) != nullptr) {
+                    isCrossBlank = true;
+                }
+                else {
+                    break;
+                }
             }
         }
     }

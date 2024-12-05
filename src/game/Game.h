@@ -7,15 +7,15 @@ public:
     Game();
     ~Game();
 
-    void start();
+    void initialize();
 
-    void handleMove(/* TODO: params */);
+    void start();
+    void handleMove(std::shared_ptr<Piece> piece, Vector dest);
 
     void checkGameState();
 
 private:
     Universe universe_;
-
     ColorType currentPlayer_;
 
     void switchPlayer();

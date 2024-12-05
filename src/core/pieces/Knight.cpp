@@ -9,68 +9,22 @@ Knight::Knight(ColorType color, Universe* universe)
 
 Knight::~Knight() {}
 
+void Knight::downdateDirection(Vector target) {
+    removeValidMoves({target});
+}
+
+void Knight::updateDirection(Vector target) {
+    appendValidMoves({target});
+}
+
+
 std::vector<Vector> Knight::getValidMoves() const {
     Vector pos = getXYZW();
     ColorType color = getColor();
 
-    std::vector<Vector> directions = {
-        Vector{1, 2, 0, 0},
-        Vector{-1, 2, 0, 0},
-        Vector{1, -2, 0, 0},
-        Vector{-1, -2, 0, 0},
-        Vector{2, 1, 0, 0},
-        Vector{-2, 1, 0, 0},
-        Vector{2, -1, 0, 0},
-        Vector{-2, -1, 0, 0},
-
-        Vector{1, 0, 2, 0},
-        Vector{1, 0, -2, 0},
-        Vector{-1, 0, 2, 0},
-        Vector{-1, 0, -2, 0},
-        Vector{2, 0, 1, 0},
-        Vector{2, 0, -1, 0},
-        Vector{-2, 0, 1, 0},
-        Vector{-2, 0, -1, 0},
-
-        Vector{0, 0, 1, 2},
-        Vector{0, 0, -1, 2},
-        Vector{0, 0, 1, -2},
-        Vector{0, 0, -1, -2},
-        Vector{0, 0, 2, 1},
-        Vector{0, 0, -2, 1},
-        Vector{0, 0, 2, -1},
-        Vector{0, 0, -2, -1},
-
-        Vector{0, 1, 2, 0},
-        Vector{0, 1, -2, 0},
-        Vector{0, -1, 2, 0},
-        Vector{0, -1, -2, 0},
-        Vector{0, 2, 1, 0},
-        Vector{0, 2, -1, 0},
-        Vector{0, -2, 1, 0},
-        Vector{0, -2, -1, 0},
-
-        Vector{0, 1, 0, 2},
-        Vector{0, -1, 0, 2},
-        Vector{0, 1, 0, -2},
-        Vector{0, -1, 0, -2},
-        Vector{0, 2, 0, 1},
-        Vector{0, -2, 0, 1},
-        Vector{0, 2, 0, -1},
-        Vector{0, -2, 0, -1},
-
-        Vector{0, 0, 1, 2},
-        Vector{0, 0, -1, 2},
-        Vector{0, 0, 1, -2},
-        Vector{0, 0, -1, -2},
-        Vector{0, 0, 2, 1},
-        Vector{0, 0, -2, 1},
-        Vector{0, 0, 2, -1},
-        Vector{0, 0, -2, -1},
-    };
     std::vector<Vector> validMoves;
 
-    for (const auto& direction: directions) {
+    for (const auto& direction: knightDirections) {
         Vector target = pos + direction;
 
         std::shared_ptr<Piece> piece = universe_->getPiece(target);

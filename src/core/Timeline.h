@@ -7,7 +7,7 @@ class Universe;
 
 class Timeline {
 public:
-    Timeline(Universe* universe, Board* parent);
+    Timeline(Universe* universe, Board* parent, int w);
     ~Timeline();
 
     void initialize();

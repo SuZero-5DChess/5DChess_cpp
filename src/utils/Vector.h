@@ -13,6 +13,7 @@ public:
 
     Vector operator-(const Vector& other) const;
     Vector operator+(const Vector& other) const;
+    Vector operator*(int other) const;
     bool operator==(const Vector& other) const;
     const int& operator[](size_t index) const;
 

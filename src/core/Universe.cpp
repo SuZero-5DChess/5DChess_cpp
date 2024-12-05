@@ -2,7 +2,7 @@
 
 #include <Notfound.h>
 
-Universe::Universe() {
+Universe::Universe(): crossBlankPieces_(), currentTimeline0_(0) {
     auto notfound = std::make_shared<Piece>(PieceType::NotFound, ColorType::White, nullptr);
     notfound_ = notfound;
 }
@@ -14,13 +14,20 @@ std::shared_ptr<Piece> Universe::returnNotFound() const {
 }
 
 
-void Universe::addTimeline(const std::shared_ptr<Timeline> timeline) {
-    timelines_.push_back(timeline);
+void Universe::addTimeline(const std::shared_ptr<Timeline> timeline, bool isPositive) {
+    if (isPositive) {
+        timelines_.push_back(timeline);
+    }
+    else {
+        timelines_.insert(timelines_.begin(), timeline);
+        currentTimeline0_++;
+    }
 }
 
 std::shared_ptr<Timeline> Universe::getTimeline(int index) const {
-    if (index >= 0 && index < timelines_.size()) {
-        return timelines_[index];
+    int vectorIndex = currentTimeline0_ + index;
+    if (vectorIndex >= 0 && vectorIndex < timelines_.size()) {
+        return timelines_[vectorIndex];
     }
     return nullptr;
 }
@@ -28,6 +35,15 @@ std::shared_ptr<Timeline> Universe::getTimeline(int index) const {
 int Universe::getTimelineCount() const {
     return timelines_.size();
 }
+
+void Universe::setPiece(Vector xyzw, std::shared_ptr<Piece> piece) {
+    int x = xyzw[0];
+    int y = xyzw[1];
+    int z = xyzw[2];
+    int w = xyzw[3];
+    getTimeline(w)->getBoardState(z)->setPiece(x, y, piece);
+}
+
 
 std::shared_ptr<Piece> Universe::getPiece(Vector xyzw) const {
     int x = xyzw[0];
@@ -45,3 +61,6 @@ std::shared_ptr<Piece> Universe::getPiece(Vector xyzw) const {
     return piece;
 }
 
+void Universe::addCrossBlankPiece(Vector place, Vector zw) {
+    crossBlankPieces_[zw].push_back(place);
+}

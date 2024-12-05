@@ -28,6 +28,14 @@ Vector Vector::operator+(const Vector& other) const {
     return result;
 }
 
+Vector Vector::operator*(int other) const {
+    Vector result;
+    for (size_t i = 0; i < data.size(); ++i) {
+        result.data.push_back(data[i] * other);
+    }
+
+    return result;
+}
 bool Vector::operator==(const Vector& other) const {
 
     return data == other.data;

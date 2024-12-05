@@ -9,7 +9,9 @@ Board::Board(Universe* universe): universe_(universe) {
 Board::~Board() {}
 
 void Board::initialize() {
-    // TODO: Initialize
+    for (const auto& [x, y, type, color]: initialBoardData) {
+        setPiece(x, y, std::make_shared<Piece>(type, color, universe_));
+    }
 }
 
 std::shared_ptr<Piece> Board::getPiece(int x, int y) const {
@@ -29,7 +31,6 @@ void Board::deletePiece(int x, int y) {
     grid_[x][y] = nullptr;
 }
 
-
 void Board::printBoard() const {
     for (int y = BOARD_SIZE - 1; y >= 0; --y) {
         for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -43,3 +44,18 @@ void Board::printBoard() const {
         std::cout << std::endl;
     }
 }
+
+std::shared_ptr<Board> Board::clone() const {
+    auto newBoard = std::make_shared<Board>(universe_);
+
+    for (int x = 0; x < BOARD_SIZE; x++) {
+        for (int y = 0; y < BOARD_SIZE; y++) {
+            std::shared_ptr<Piece> piece = getPiece(x, y);
+            if (piece) {
+                auto newPiece = std::make_shared<Piece>(*piece);
+                newBoard->setPiece(x, y, newPiece);
+            }
+        }
+    }
+}
+

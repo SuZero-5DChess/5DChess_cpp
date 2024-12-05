@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <Notfound.h>
+#include <Queen.h>
 #include <Rook.h>
 #include <Universe.h>
 
@@ -13,41 +14,9 @@ King::~King() {}
 std::vector<Vector> King::getValidMoves() const {
     Vector pos = getXYZW();
     ColorType color = getColor();
-
-    std::vector<Vector> directions = {
-        Vector{1, 1, 0, 0},
-        Vector{-1, 1, 0, 0},
-        Vector{1, -1, 0, 0},
-        Vector{-1, -1, 0, 0},
-
-        Vector{1, 0, 1, 0},
-        Vector{1, 0, -1, 0},
-        Vector{-1, 0, 1, 0},
-        Vector{-1, 0, -1, 0},
-
-        Vector{0, 0, 1, 1},
-        Vector{0, 0, -1, 1},
-        Vector{0, 0, 1, -1},
-        Vector{0, 0, -1, -1},
-
-        Vector{0, 1, 1, 0},
-        Vector{0, 1, -1, 0},
-        Vector{0, -1, 1, 0},
-        Vector{0, -1, -1, 0},
-
-        Vector{0, 1, 0, 1},
-        Vector{0, -1, 0, 1},
-        Vector{0, 1, 0, -1},
-        Vector{0, -1, 0, -1},
-
-        Vector{0, 0, 1, 1},
-        Vector{0, 0, -1, 1},
-        Vector{0, 0, 1, -1},
-        Vector{0, 0, -1, -1},
-    };
     std::vector<Vector> validMoves;
 
-    for (const auto& direction: directions) {
+    for (const auto& direction: queenDirections) {
         Vector target = pos + direction;
 
         std::shared_ptr<Piece> piece = universe_->getPiece(target);
