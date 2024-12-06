@@ -32,13 +32,13 @@ std::vector<Vector> AfterPawn::getValidMoves() const {
 
     std::shared_ptr<Piece> right_now_dest = universe_->getPiece(pos + Vector{1, 0, 0, 0});
     std::shared_ptr<Piece> right_now_orig = universe_->getPiece(pos + Vector{1, -2 * forward_up, 0, 0});
-    std::shared_ptr<Piece> right_past_dest = universe_->getPiece(pos + Vector{1, 0, -1, 0});
-    std::shared_ptr<Piece> right_past_orig = universe_->getPiece(pos + Vector{1, -2 * forward_up, -1, 0});
+    std::shared_ptr<Piece> right_past_dest = universe_->getPiece(pos + Vector{1, 0, -2, 0});
+    std::shared_ptr<Piece> right_past_orig = universe_->getPiece(pos + Vector{1, -2 * forward_up, -2, 0});
 
     std::shared_ptr<Piece> left_now_dest = universe_->getPiece(pos + Vector{-1, 0, 0, 0});
     std::shared_ptr<Piece> left_now_orig = universe_->getPiece(pos + Vector{-1, -2 * forward_up, 0, 0});
-    std::shared_ptr<Piece> left_past_dest = universe_->getPiece(pos + Vector{-1, 0, -1, 0});
-    std::shared_ptr<Piece> left_past_orig = universe_->getPiece(pos + Vector{-1, -2 * forward_up, -1, 0});
+    std::shared_ptr<Piece> left_past_dest = universe_->getPiece(pos + Vector{-1, 0, -2, 0});
+    std::shared_ptr<Piece> left_past_orig = universe_->getPiece(pos + Vector{-1, -2 * forward_up, -2, 0});
 
     if (right_now_dest->getType() == PieceType::Pawn && right_now_dest->getColor() != color
         && right_now_orig == nullptr
@@ -57,8 +57,8 @@ std::vector<Vector> AfterPawn::getValidMoves() const {
     std::vector<Vector> take_entries = {
         Vector{1, -1 * forward_up, 0, 0},
         Vector{-1, -1 * forward_up, 0, 0},
-        Vector{0, 0, 1, -1 * forward_up},
-        Vector{0, 0, -1, -1 * forward_up},
+        Vector{0, 0, 2, -1 * forward_up},
+        Vector{0, 0, -2, -1 * forward_up},
     };
 
     for (const auto& entry: entries) {

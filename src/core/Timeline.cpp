@@ -1,7 +1,8 @@
 #include "Timeline.h"
 
-Timeline::Timeline(Universe* universe, Board* parent, int w)
-    : universe_(universe), parent_(parent), w_(w) {}
+Timeline::Timeline(Universe* universe, Board* parent, int zOffset)
+    : universe_(universe), parent_(parent), zOffset_(zOffset) {
+}
 
 Timeline::~Timeline() {}
 
@@ -12,7 +13,7 @@ void Timeline::addBoardState(const std::shared_ptr<Board> board) {
 }
 
 std::shared_ptr<Board> Timeline::getBoardState(int index) const {
-    int relativeIndex = index - w_;
+    int relativeIndex = index - zOffset_;
     if (relativeIndex >= 0 && relativeIndex < boards_.size()) {
         return boards_[index];
     }

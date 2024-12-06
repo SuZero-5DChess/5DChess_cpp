@@ -24,8 +24,8 @@ std::vector<Vector> rookDirections = {
     Vector{-1, 0, 0, 0},
     Vector{0, 1, 0, 0},
     Vector{0, -1, 0, 0},
-    Vector{0, 0, 1, 0},
-    Vector{0, 0, -1, 0},
+    Vector{0, 0, 2, 0},
+    Vector{0, 0, -2, 0},
     Vector{0, 0, 0, 1},
     Vector{0, 0, 0, -1},
 };

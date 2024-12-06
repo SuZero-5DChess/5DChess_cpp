@@ -12,7 +12,12 @@ public:
     void start();
     void handleMove(std::shared_ptr<Piece> piece, Vector dest);
 
-    void checkGameState();
+    bool canNextTurn();
+
+    std::vector<Vector> getMovablePieces();
+
+    std::vector<Vector> readMove();
+    bool getYesNo();
 
 private:
     Universe universe_;

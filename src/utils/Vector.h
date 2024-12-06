@@ -24,3 +24,6 @@ public:
 private:
     std::vector<int> data;
 };
+
+std::ostream& operator<<(std::ostream& os, const Vector& vec);
+std::ostream& operator<<(std::ostream& os, const std::vector<Vector>& vec);

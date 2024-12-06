@@ -20,6 +20,18 @@ enum class ColorType {
     Black
 };
 
+std::ostream& operator<<(std::ostream& os, const ColorType& color) {
+    switch (color) {
+        case ColorType::White:
+            os << "White";
+            break;
+        case ColorType::Black:
+            os << "Black";
+            break;
+    }
+    return os;
+}
+
 class Piece {
 public:
     Piece(PieceType type, ColorType color, Universe* universe);
@@ -35,6 +47,7 @@ public:
     virtual std::vector<Vector> getValidMoves() const = 0;
     void appendValidMoves(std::vector<Vector> validMoves);
     void removeValidMoves(std::vector<Vector> validMoves);
+    std::vector<Vector> readValidMoves() const;
 
 protected:
     Universe* universe_;

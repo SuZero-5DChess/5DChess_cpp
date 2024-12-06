@@ -53,3 +53,7 @@ void Piece::removeValidMoves(std::vector<Vector> validMoves) {
             }),validMoves_.end()
     );
 }
+
+std::vector<Vector> Piece::readValidMoves() const {
+    return validMoves_;
+}

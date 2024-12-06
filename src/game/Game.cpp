@@ -1,11 +1,12 @@
 #include "Game.h"
 
 #include <AfterPawn.h>
-#include <BeforePawn.h>
+#include <algorithm>
 #include <Bishop.h>
 #include <Knight.h>
 #include <Queen.h>
 #include <Rook.h>
+#include <bits/regex.h>
 
 Game::Game()
     : currentPlayer_(ColorType::White) {
@@ -35,9 +36,25 @@ void Game::initialize() {
     }
 }
 
-
 void Game::start() {
     while (true) {
+        std::vector<Vector> move = readMove();
+        std::shared_ptr<Piece> piece = universe_.getPiece(move[0]);
+        handleMove(piece, move[1]);
+
+        if (!canNextTurn()) { continue; }
+
+        std::vector<Vector> remainMoves = getMovablePieces();
+        if (remainMoves.empty()) {
+            switchPlayer();
+            std::cout << "Changed to Player" << currentPlayer_;
+        } else {
+            if (getYesNo()) {
+                continue;
+            } else {
+                switchPlayer();
+            }
+        }
     }
 }
 
@@ -46,27 +63,45 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
     ColorType color = piece->getColor();
     int forward_up = color == ColorType::White ? 1 : -1;
 
-
-
     // move
     piece->setValidMoves(piece->getValidMoves());
     piece->setXYZW(dest);
 
     universe_.setPiece(pos, nullptr);
 
-    // take
-    if (universe_.getPiece(dest) != nullptr) {
-        // TODO some operation
 
-    // TODO check game over
+    // take
+    std::shared_ptr<Piece> destPiece = universe_.getPiece(dest);
+
+    if (destPiece != nullptr) {
+        // TODO some operation?
+        if (destPiece->getType() == PieceType::King) {
+            // TODO game over
+
+            std::cout << "Player" << currentPlayer_ << "win!";
+            exit(0);
+        }
     }
 
-    // TODO en pass
+    Vector enRight = {1, -1 * forward_up, 0, 0};
+    Vector enLeft = {-1, -1 * forward_up, 0, 0};
+
+    if (piece->getType() == PieceType::Pawn
+        && dest - pos == enRight
+        && destPiece == nullptr) {
+        universe_.setPiece(pos + Vector{1, 0, 0, 0}, nullptr);
+    }
+
+    if (piece->getType() == PieceType::Pawn
+        && dest - pos == enRight
+        && destPiece == nullptr) {
+        universe_.setPiece(pos + Vector{-1, 0, 0, 0}, nullptr);
+    }
 
     universe_.setPiece(dest, piece);
 
-    // check the start point and update
 
+    // check the start point and update
     for (const auto& direction: queenDirections) {
         Vector current_target = pos + direction;
 
@@ -120,8 +155,8 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         Vector{-1, -1 * forward_up, 0, 0},
         Vector{0, -2 * forward_up, 0, 0},
         Vector{0, 0, 0, -1 * forward_up},
-        Vector{0, 0, 1, -1 * forward_up},
-        Vector{0, 0, -1, -1 * forward_up},
+        Vector{0, 0, 2, -1 * forward_up},
+        Vector{0, 0, -2, -1 * forward_up},
         Vector{0, 0, 0, -2 * forward_up},
     };
 
@@ -135,7 +170,6 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
 
 
     // check the end point and update
-
     for (const auto& direction: queenDirections) {
         Vector current_target = pos + direction;
 
@@ -195,17 +229,157 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
 
     std::shared_ptr<Board> newBoard = universe_.getTimeline(dest[3])->getBoardState(dest[2])->clone();
 
-    // TODO: time travel
+    // time travel
 
+    std::shared_ptr<Timeline> destTimeline = universe_.getTimeline(dest[3]);
 
-    // check crossing blank board update
+    if (pos[2] == dest[2] && pos[3] == dest[3]) {
+        // in-board move
+        destTimeline->addBoardState(newBoard);
 
-    switchPlayer();
+        // check crossing blank board update
+        universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
+    }
+    else if (destTimeline->getLength() + destTimeline->getOffset() - 1 == dest[2]) {
+        // to active board, no timeline created
+        destTimeline->addBoardState(newBoard);
+
+        std::shared_ptr<Board> originBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
+        universe_.getTimeline(pos[3])->addBoardState(originBoard);
+
+        universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
+        universe_.checkCrossBlankPiece(Vector{dest[2] + 1, dest[3]});
+    }
+    else {
+        // to inactive board, create timeline
+        Timeline createTimeline = Timeline(
+            &universe_,
+            destTimeline->getBoardState(dest[2]).get(),
+            dest[2] + 1
+        );
+        createTimeline.addBoardState(newBoard);
+        universe_.addTimeline(std::make_shared<Timeline>(createTimeline), forward_up);
+
+        std::shared_ptr<Board> originBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
+        universe_.getTimeline(pos[3])->addBoardState(originBoard);
+
+        universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
+
+        universe_.setPresent(dest[2]);
+    }
 }
 
-void Game::checkGameState() {
+bool Game::canNextTurn() {
+    Vector timelinesIndex = universe_.getActiveTimelines();
+    int present = universe_.getPresent();
+    for (int i = timelinesIndex[0]; i <= timelinesIndex[1]; i++) {
+        std::shared_ptr<Timeline> iterTimeline = universe_.getTimeline(i);
+        if (iterTimeline->getLength() + iterTimeline->getOffset() - 1 == present) {
+            return false;
+        }
+    }
+    return true;
 }
+
+std::vector<Vector> Game::getMovablePieces() {
+    std::vector<Vector> movablePieces;
+
+    Vector timelinesIndex = universe_.getActiveTimelines();
+    for (int i = timelinesIndex[0]; i <= timelinesIndex[1]; i++) {
+        std::shared_ptr<Timeline> iterTimeline = universe_.getTimeline(i);
+        int turn = currentPlayer_ == ColorType::White ? 1 : 0;
+        if ((iterTimeline->getLength() + iterTimeline->getOffset() - 1) % 2 != turn) { continue; }
+
+        std::vector<std::shared_ptr<Piece>> pieces = iterTimeline->getBoardState(iterTimeline->getLength() - 1)->getColorPieces(currentPlayer_);
+        for (const auto &piece : pieces) {
+            if (piece->readValidMoves().empty()) { continue; }
+
+            movablePieces.push_back(piece->getXYZW());
+        }
+    }
+
+    return movablePieces;
+}
+
 
 void Game::switchPlayer() {
     currentPlayer_ = (currentPlayer_ == ColorType::White) ? ColorType::Black : ColorType::White;
+}
+
+std::vector<Vector> Game::readMove() {
+    // (a, b, c, d)->(e, f, g, h)
+    std::regex pattern(R"(\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)\s*->\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\))");
+    std::string input;
+    std::smatch match;
+
+    std::vector<Vector> movablePieces = getMovablePieces();
+
+    std::cout << movablePieces;
+
+    while (true) {
+        std::cout << "Enter input in the format (a,b,c,d)->(e,f,g,h): ";
+        std::getline(std::cin, input);
+
+        if (std::regex_match(input, match, pattern)) {
+            int a = std::stoi(match[1].str());
+            int b = std::stoi(match[2].str());
+            int c = std::stoi(match[3].str());
+            int d = std::stoi(match[4].str());
+
+            Vector startPosition = Vector{a, b, c, d};
+
+            if (std::find(
+                movablePieces.begin(),
+                movablePieces.end(),
+                startPosition
+            ) == movablePieces.end()) {
+                std::cout << "Invalid start position";
+                continue;
+            }
+
+            std::shared_ptr<Piece> piece = universe_.getPiece(startPosition);
+
+            int e = std::stoi(match[5].str());
+            int f = std::stoi(match[6].str());
+            int g = std::stoi(match[7].str());
+            int h = std::stoi(match[8].str());
+
+            Vector endPosition = Vector{e, f, g, h};
+
+            std::vector<Vector> dests = piece->readValidMoves();
+
+            if (std::find(
+                dests.begin(),
+                dests.end(),
+                endPosition
+                ) == dests.end()) {
+                std::cout << "Invalid end position";
+                continue;
+            }
+
+            return {Vector{a, b, c, d}, Vector{e, f, g, h}};
+        } else {
+            std::cout << "Invalid input. Please try again." << std::endl;
+        }
+    }
+}
+
+bool Game::getYesNo() {
+    std::string input;
+    while (true) {
+        std::cout << "you can continue, Y/N? ";
+        std::getline(std::cin, input);
+
+        if (!input.empty()) {
+            char firstChar = std::tolower(input[0]);
+
+            if (firstChar == 'y') {
+                return true;
+            } else if (firstChar == 'n') {
+                return false;
+            }
+        }
+
+        std::cout << "Invalid input. Please enter Y or N." << std::endl;
+    }
 }

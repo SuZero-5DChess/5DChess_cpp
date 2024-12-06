@@ -57,5 +57,22 @@ std::shared_ptr<Board> Board::clone() const {
             }
         }
     }
+
+    return newBoard;
+}
+
+std::vector<std::shared_ptr<Piece>> Board::getColorPieces(ColorType color) const {
+    std::vector<std::shared_ptr<Piece>> pieces;
+
+    for (int x = 0; x < BOARD_SIZE; x++) {
+        for (int y = 0; y < BOARD_SIZE; y++) {
+            std::shared_ptr<Piece> piece = getPiece(x, y);
+            if (piece && piece->getColor() == color) {
+                pieces.push_back(piece);
+            }
+        }
+    }
+
+    return pieces;
 }
 

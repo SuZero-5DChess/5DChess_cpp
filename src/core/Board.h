@@ -44,6 +44,8 @@ public:
 
     std::shared_ptr<Board> clone() const;
 
+    std::vector<std::shared_ptr<Piece>> getColorPieces(ColorType color) const;
+
 private:
     Universe* universe_;
     std::vector<std::vector<std::shared_ptr<Piece>>> grid_;

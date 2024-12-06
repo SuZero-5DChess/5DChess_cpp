@@ -2,7 +2,7 @@
 
 #include <Notfound.h>
 
-Universe::Universe(): crossBlankPieces_(), currentTimeline0_(0) {
+Universe::Universe(): crossBlankPieces_(), currentTimeline0_(0), present_(0) {
     auto notfound = std::make_shared<Piece>(PieceType::NotFound, ColorType::White, nullptr);
     notfound_ = notfound;
 }
@@ -36,6 +36,11 @@ int Universe::getTimelineCount() const {
     return timelines_.size();
 }
 
+int Universe::getCurrentTimeline0() const {
+    return currentTimeline0_;
+}
+
+
 void Universe::setPiece(Vector xyzw, std::shared_ptr<Piece> piece) {
     int x = xyzw[0];
     int y = xyzw[1];
@@ -64,3 +69,31 @@ std::shared_ptr<Piece> Universe::getPiece(Vector xyzw) const {
 void Universe::addCrossBlankPiece(Vector place, Vector zw) {
     crossBlankPieces_[zw].push_back(place);
 }
+
+void Universe::checkCrossBlankPiece(Vector zw) {
+    if (crossBlankPieces_.find(zw) != crossBlankPieces_.end()) {
+        for (const auto& piecePos : crossBlankPieces_[zw]) {
+            std::shared_ptr<Piece> piece = getPiece(piecePos);
+            piece->setValidMoves(piece->getValidMoves());
+        }
+    }
+}
+
+Vector<int> Universe::getActiveTimelines() {
+    int length = getTimelineCount() - 1;
+    int mid = 2 * currentTimeline0_;
+    if (length > mid) return Vector{- currentTimeline0_, currentTimeline0_};
+    else if (length < mid) return Vector{currentTimeline0_ - length, length - currentTimeline0_};
+    else return Vector{- currentTimeline0_, length - currentTimeline0_};
+}
+
+void Universe::setPresent(int p) {
+    present_ = p;
+}
+
+int Universe::getPresent() const {
+    return present_;
+}
+
+
+

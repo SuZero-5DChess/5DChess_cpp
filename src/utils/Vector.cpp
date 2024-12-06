@@ -48,6 +48,30 @@ const int& Vector::operator[](size_t index) const {
     return data[index];
 }
 
+std::ostream& operator<<(std::ostream& os, const Vector& vec) {
+    os << "(";
+    for (size_t i = 0; i < vec.size(); ++i) {
+        os << vec[i];
+        if (i != vec.size() - 1) {
+            os << ", ";
+        }
+    }
+    os << ")";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::vector<Vector>& vec) {
+    os << "[";
+    for (size_t i = 0; i < vec.size(); ++i) {
+        os << vec[i];
+        if (i != vec.size() - 1) {
+            os << ", ";
+        }
+    }
+    os << "]";
+    return os;
+}
+
 void Vector::print() const {
     for (int val : data) {
         std::cout << val << " ";

@@ -16,15 +16,23 @@ public:
     void addTimeline(const std::shared_ptr<Timeline> timeline, bool isPositive);
     std::shared_ptr<Timeline> getTimeline(int index) const;
     int getTimelineCount() const;
+    int getCurrentTimeline0() const;
 
     void setPiece(Vector xyzw, std::shared_ptr<Piece> piece);
     std::shared_ptr<Piece> getPiece(Vector xyzw) const;
 
     void addCrossBlankPiece(Vector piece, Vector zw);
+    void checkCrossBlankPiece(Vector zw);
+
+    Vector<int> getActiveTimelines();
+
+    void setPresent(int p);
+    int getPresent() const;
 
 private:
     std::vector<std::shared_ptr<Timeline>> timelines_;
     std::shared_ptr<Piece> notfound_;
     std::unordered_map<Vector, std::vector<Vector>> crossBlankPieces_;
     int currentTimeline0_;
+    int present_;
 };
