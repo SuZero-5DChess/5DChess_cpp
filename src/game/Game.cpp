@@ -18,9 +18,9 @@ Game::~Game() {}
 
 void Game::initialize() {
     Timeline timeline = Timeline(&universe_, nullptr, 0);
-    Board board0 = Board(&universe_);
+    Board board0 = Board(&universe_, Vector{0, 0});
     board0.initialize();
-    Board board1 = Board(&universe_);
+    Board board1 = Board(&universe_, Vector{1, 0});
     board1.initialize();
     timeline.addBoardState(std::make_shared<Board>(board0));
     timeline.addBoardState(std::make_shared<Board>(board1));
@@ -87,14 +87,14 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
     Vector enRight = {1, -1 * forward_up, 0, 0};
     Vector enLeft = {-1, -1 * forward_up, 0, 0};
 
-    if (piece->getType() == PieceType::Pawn
+    if (piece->getType() == PieceType::AfterPawn
         && dest - pos == enRight
         && destPiece == nullptr) {
         universe_.setPiece(pos + Vector{1, 0, 0, 0}, nullptr);
     }
 
-    if (piece->getType() == PieceType::Pawn
-        && dest - pos == enRight
+    if (piece->getType() == PieceType::AfterPawn
+        && dest - pos == enLeft
         && destPiece == nullptr) {
         universe_.setPiece(pos + Vector{-1, 0, 0, 0}, nullptr);
     }
@@ -111,7 +111,7 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
             if (place != nullptr) {
                 PieceType type = place->getType();
                 if (type != PieceType::NotFound) {
-                    if (type == PieceType::Pawn) {
+                    if (type == PieceType::BeforePawn || type == PieceType::AfterPawn) {
                         break;
                     }
                     int count = 0;
@@ -164,7 +164,8 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
     for (const auto& direction: pawnEntries) {
         Vector current_target = pos + direction;
         std::shared_ptr<Piece> place = universe_.getPiece(current_target);
-        if (place->getType() == PieceType::Pawn) {
+        PieceType type = place->getType();
+        if (type == PieceType::BeforePawn || type == PieceType::AfterPawn) {
             place->setValidMoves(place->getValidMoves());
         }
     }
@@ -179,7 +180,7 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
             if (place != nullptr) {
                 PieceType type = place->getType();
                 if (type != PieceType::NotFound) {
-                    if (type == PieceType::Pawn) {
+                    if (type == PieceType::BeforePawn || type == PieceType::AfterPawn) {
                         break;
                     }
                     int count = 0;
@@ -221,7 +222,8 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
     for (const auto& direction: pawnEntries) {
         Vector current_target = pos + direction;
         std::shared_ptr<Piece> place = universe_.getPiece(current_target);
-        if (place->getType() == PieceType::Pawn) {
+        PieceType type = place->getType();
+        if (type == PieceType::BeforePawn || type == PieceType::AfterPawn) {
             place->setValidMoves(place->getValidMoves());
         }
     }
@@ -315,7 +317,9 @@ std::vector<Vector> Game::readMove() {
 
     std::vector<Vector> movablePieces = getMovablePieces();
 
-    std::cout << movablePieces;
+    for (const auto& element: movablePieces) {
+        std::cout << element << std::endl;
+    }
 
     while (true) {
         std::cout << "Enter input in the format (a,b,c,d)->(e,f,g,h): ";

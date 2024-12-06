@@ -6,10 +6,14 @@
 #include <Rook.h>
 #include <Universe.h>
 
-King::King(ColorType color, Universe* universe)
-    : Piece(PieceType::Rook, color, universe){}
+King::King(ColorType color, Universe* universe, Vector xyzw)
+    : Piece(PieceType::King, color, universe, xyzw){}
 
 King::~King() {}
+
+std::shared_ptr<Piece> createKing(ColorType color, Universe* universe, Vector xyzw) {
+    return std::make_shared<King>(color, universe, xyzw);
+}
 
 std::vector<Vector> King::getValidMoves() const {
     Vector pos = getXYZW();

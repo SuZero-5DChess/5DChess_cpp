@@ -1,10 +1,11 @@
 #pragma once
 
+#include <memory>
 #include "Piece.h"
 
 class Queen : public Piece {
 public:
-    Queen(ColorType color, Universe* universe);
+    Queen(ColorType color, Universe* universe, Vector xyzw);
     virtual ~Queen();
 
 
@@ -12,6 +13,8 @@ public:
     void updateDirection(Vector start, Vector direction);
     virtual std::vector<Vector> getValidMoves() const override;
 };
+
+std::shared_ptr<Piece> createQueen(ColorType color, Universe* universe, Vector xyzw);
 
 const std::vector<Vector> queenDirections = {
     Vector{1, 1, 0, 0},

@@ -6,7 +6,8 @@
 class Universe;
 
 enum class PieceType {
-    Pawn,
+    BeforePawn,
+    AfterPawn,
     Rook,
     Knight,
     Bishop,
@@ -24,7 +25,7 @@ std::ostream& operator<<(std::ostream& os, ColorType const& color);
 
 class Piece {
 public:
-    Piece(PieceType type, ColorType color, Universe* universe);
+    Piece(PieceType type, ColorType color, Universe* universe, Vector xyzw);
     virtual ~Piece();
 
     PieceType getType() const;

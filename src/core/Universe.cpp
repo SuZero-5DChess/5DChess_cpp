@@ -1,7 +1,7 @@
 #include <Universe.h>
 
-Universe::Universe(): crossBlankPieces_(), currentTimeline0_(0), present_(0) {
-    auto notfound = std::make_shared<Piece>(PieceType::NotFound, ColorType::White, nullptr);
+Universe::Universe(): crossBlankPieces_(), currentTimeline0_(-1), present_(0) {
+    auto notfound = std::make_shared<Piece>(PieceType::NotFound, ColorType::White, nullptr, Vector{-1, -1, -1, -1});
     notfound_ = notfound;
 }
 

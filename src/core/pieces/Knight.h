@@ -1,16 +1,19 @@
 #pragma once
 
+#include <memory>
 #include "Piece.h"
 
 class Knight : public Piece {
 public:
-    Knight (ColorType color, Universe* universe);
+    Knight (ColorType color, Universe* universe, Vector xyzw);
     virtual ~Knight();
 
     void downdateDirection(Vector direction);
     void updateDirection(Vector target);
     virtual std::vector<Vector> getValidMoves() const override;
 };
+
+std::shared_ptr<Piece> createKnight(ColorType color, Universe* universe, Vector xyzw);
 
 const std::vector<Vector> knightDirections = {
     Vector{1, 2, 0, 0},

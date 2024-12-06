@@ -4,7 +4,7 @@
 
 class NotFound : public Piece {
 public:
-    NotFound(ColorType color, Universe* universe);
+    NotFound(ColorType color, Universe* universe, Vector xyzw);
     virtual ~NotFound();
 
     virtual std::vector<Vector> getValidMoves() const override;

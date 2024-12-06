@@ -4,10 +4,14 @@
 #include <Notfound.h>
 #include <Universe.h>
 
-Knight::Knight(ColorType color, Universe* universe)
-    : Piece(PieceType::Rook, color, universe) {}
+Knight::Knight(ColorType color, Universe* universe, Vector xyzw)
+    : Piece(PieceType::Knight, color, universe, xyzw) {}
 
 Knight::~Knight() {}
+
+std::shared_ptr<Piece> createKnight(ColorType color, Universe* universe, Vector xyzw) {
+    return std::make_shared<Knight>(color, universe, xyzw);
+}
 
 void Knight::downdateDirection(Vector target) {
     removeValidMoves({target});

@@ -1,8 +1,10 @@
 #include "Piece.h"
 #include <algorithm>
 
-Piece::Piece(PieceType type, ColorType color, Universe* universe)
-    : type_(type), color_(color), universe_(universe) {}
+Piece::Piece(PieceType type, ColorType color, Universe* universe, Vector xyzw)
+    : type_(type), color_(color), universe_(universe) {
+    pos_xyzw_ = xyzw;
+}
 
 Piece::~Piece() {}
 
@@ -16,7 +18,8 @@ ColorType Piece::getColor() const {
 
 std::string Piece::getSymbol() const {
     switch (type_) {
-        case PieceType::Pawn: return color_ == ColorType::White ? "P" : "p";
+        case PieceType::BeforePawn: return color_ == ColorType::White ? "P" : "p";
+        case PieceType::AfterPawn: return color_ == ColorType::White ? "P" : "p";
         case PieceType::Rook: return color_ == ColorType::White ? "R" : "r";
         case PieceType::Knight: return color_ == ColorType::White ? "N" : "n";
         case PieceType::Bishop: return color_ == ColorType::White ? "B" : "b";

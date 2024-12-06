@@ -1,10 +1,12 @@
 #pragma once
 
+#include <memory>
+
 #include "Piece.h"
 
 class Bishop: public Piece {
 public:
-    Bishop(ColorType color, Universe* universe);
+    Bishop(ColorType color, Universe* universe, Vector xyzw);
     virtual ~Bishop();
 
     void downdateDirection(Vector start, Vector direction);
@@ -12,6 +14,7 @@ public:
     virtual std::vector<Vector> getValidMoves() const override;
 };
 
+std::shared_ptr<Piece> createBishop(ColorType color, Universe* universe, Vector xyzw);
 
 const std::vector<Vector> bishopDirections = {
     Vector{1, 1, 0, 0},

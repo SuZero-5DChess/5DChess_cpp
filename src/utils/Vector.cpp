@@ -36,6 +36,7 @@ Vector Vector::operator*(int other) const {
 
     return result;
 }
+
 bool Vector::operator==(const Vector& other) const {
 
     return data == other.data;

@@ -4,10 +4,14 @@
 #include <Notfound.h>
 #include <Universe.h>
 
-Queen::Queen(ColorType color, Universe* universe)
-    : Piece(PieceType::Rook, color, universe){}
+Queen::Queen(ColorType color, Universe* universe, Vector xyzw)
+    : Piece(PieceType::Queen, color, universe, xyzw){}
 
 Queen::~Queen() {}
+
+std::shared_ptr<Piece> createQueen(ColorType color, Universe* universe, Vector xyzw) {
+    return std::make_shared<Queen>(color, universe, xyzw);
+}
 
 void Queen::downdateDirection(Vector start, Vector direction) {
     Vector pos = getXYZW();

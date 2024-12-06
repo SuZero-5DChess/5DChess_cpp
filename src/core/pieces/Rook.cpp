@@ -4,11 +4,14 @@
 #include <Notfound.h>
 #include <Universe.h>
 
-Rook::Rook(ColorType color, Universe* universe)
-    : Piece(PieceType::Rook, color, universe), isMoved_(false) {}
+Rook::Rook(ColorType color, Universe* universe, Vector xyzw)
+    : Piece(PieceType::Rook, color, universe, xyzw), isMoved_(false) {}
 
 Rook::~Rook() {}
 
+std::shared_ptr<Piece> createRook(ColorType color, Universe* universe, Vector xyzw) {
+    return std::make_shared<Rook>(color, universe, xyzw);
+}
 
 void Rook::downdateDirection(Vector start, Vector direction) {
     Vector pos = getXYZW();
@@ -98,7 +101,7 @@ std::vector<Vector> Rook::getValidMoves() const {
     ColorType color = getColor();
     std::vector<Vector> validMoves;
 
-    for (const auto& direction: rookDirections) {
+    for (const Vector& direction: rookDirections) {
         bool isCrossBlank = false;
         Vector current_target = pos + direction;
 

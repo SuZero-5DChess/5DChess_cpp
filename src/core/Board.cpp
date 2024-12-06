@@ -1,14 +1,17 @@
 #include <Universe.h>
 
-Board::Board(Universe* universe): universe_(universe) {
+#include <utility>
+
+Board::Board(Universe* universe, Vector zw): universe_(universe) {
+    zw_ = std::move(zw);
     grid_.resize(BOARD_SIZE, std::vector<std::shared_ptr<Piece>>(BOARD_SIZE, nullptr));
 }
 
 Board::~Board() {}
 
 void Board::initialize() {
-    for (const auto& [x, y, type, color]: initialBoardData) {
-        setPiece(x, y, std::make_shared<Piece>(type, color, universe_));
+    for (const auto& [x, y, type, color, creator] : initialBoardData) {
+        setPiece(x, y, creator(color, universe_, Vector{x, y, zw_[0], zw_[1]}));
     }
 }
 
@@ -29,6 +32,11 @@ void Board::deletePiece(int x, int y) {
     grid_[x][y] = nullptr;
 }
 
+Vector Board::getZW() {
+    return zw_;
+}
+
+
 void Board::printBoard() const {
     for (int y = BOARD_SIZE - 1; y >= 0; --y) {
         for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -44,7 +52,7 @@ void Board::printBoard() const {
 }
 
 std::shared_ptr<Board> Board::clone() const {
-    auto newBoard = std::make_shared<Board>(universe_);
+    auto newBoard = std::make_shared<Board>(universe_, zw_);
 
     for (int x = 0; x < BOARD_SIZE; x++) {
         for (int y = 0; y < BOARD_SIZE; y++) {

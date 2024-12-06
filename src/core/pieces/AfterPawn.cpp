@@ -2,10 +2,14 @@
 
 #include <Universe.h>
 
-AfterPawn::AfterPawn(ColorType color, Universe* universe)
-    : Piece(PieceType::Pawn, color, universe) {}
+AfterPawn::AfterPawn(ColorType color, Universe* universe, Vector xyzw)
+    : Piece(PieceType::AfterPawn, color, universe, xyzw) {}
 
 AfterPawn::~AfterPawn() {}
+
+std::shared_ptr<Piece> createAfterPawn(ColorType color, Universe* universe, Vector xyzw) {
+    return std::make_shared<AfterPawn>(color, universe, xyzw);
+}
 
 std::vector<Vector> AfterPawn::getValidMoves() const {
     Vector pos = getXYZW();
@@ -40,17 +44,17 @@ std::vector<Vector> AfterPawn::getValidMoves() const {
     std::shared_ptr<Piece> left_past_dest = universe_->getPiece(pos + Vector{-1, 0, -2, 0});
     std::shared_ptr<Piece> left_past_orig = universe_->getPiece(pos + Vector{-1, -2 * forward_up, -2, 0});
 
-    if (right_now_dest->getType() == PieceType::Pawn && right_now_dest->getColor() != color
+    if (right_now_dest->getType() == PieceType::AfterPawn && right_now_dest->getColor() != color
         && right_now_orig == nullptr
         && right_past_dest == nullptr
-        && right_past_orig-> getType() == PieceType::Pawn && right_past_orig->getColor() != color) {
+        && right_past_orig-> getType() == PieceType::AfterPawn && right_past_orig->getColor() != color) {
         validMoves.push_back(pos + Vector{1, -1 * forward_up, 0, 0});
     }
 
-    if (left_now_dest->getType() == PieceType::Pawn && left_now_dest->getColor() != color
+    if (left_now_dest->getType() == PieceType::AfterPawn && left_now_dest->getColor() != color
         && left_now_orig == nullptr
         && left_past_dest == nullptr
-        && left_past_orig-> getType() == PieceType::Pawn && left_past_orig->getColor() != color) {
+        && left_past_orig-> getType() == PieceType::AfterPawn && left_past_orig->getColor() != color) {
         validMoves.push_back(pos + Vector{-1, -1 * forward_up, 0, 0});
     }
 

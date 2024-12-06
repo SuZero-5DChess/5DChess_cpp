@@ -4,10 +4,14 @@
 #include <Notfound.h>
 #include <Universe.h>
 
-Bishop::Bishop(ColorType color, Universe* universe)
-    : Piece(PieceType::Rook, color, universe){}
+Bishop::Bishop(ColorType color, Universe* universe, Vector xyzw)
+    : Piece(PieceType::Bishop, color, universe, xyzw){}
 
 Bishop::~Bishop() {}
+
+std::shared_ptr<Piece> createBishop(ColorType color, Universe* universe, Vector xyzw) {
+    return std::make_shared<Bishop>(color, universe, xyzw);
+}
 
 void Bishop::downdateDirection(Vector start, Vector direction) {
     Vector pos = getXYZW();

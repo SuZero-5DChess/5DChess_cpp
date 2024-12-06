@@ -3,10 +3,14 @@
 #include <Notfound.h>
 #include <Universe.h>
 
-BeforePawn::BeforePawn(ColorType color, Universe* universe)
-    : Piece(PieceType::Pawn, color, universe){}
+BeforePawn::BeforePawn(ColorType color, Universe* universe, Vector xyzw)
+    : Piece(PieceType::BeforePawn, color, universe, xyzw){}
 
 BeforePawn::~BeforePawn() {}
+
+std::shared_ptr<Piece> createBeforePawn(ColorType color, Universe* universe, Vector xyzw) {
+    return std::make_shared<BeforePawn>(color, universe, xyzw);
+}
 
 std::vector<Vector> BeforePawn::getValidMoves() const {
     Vector pos = getXYZW();
