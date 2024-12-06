@@ -23,3 +23,7 @@ std::shared_ptr<Board> Timeline::getBoardState(int index) const {
 int Timeline::getLength() const {
     return boards_.size();
 }
+
+int Timeline::getOffset() const {
+    return zOffset_;
+}

@@ -19,7 +19,7 @@ private:
     bool isMoved_;
 };
 
-std::vector<Vector> rookDirections = {
+const std::vector<Vector> rookDirections = {
     Vector{1, 0, 0, 0},
     Vector{-1, 0, 0, 0},
     Vector{0, 1, 0, 0},

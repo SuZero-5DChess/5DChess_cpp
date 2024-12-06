@@ -1,5 +1,3 @@
-#include "Board.h"
-#include <iostream>
 #include <Universe.h>
 
 Board::Board(Universe* universe): universe_(universe) {

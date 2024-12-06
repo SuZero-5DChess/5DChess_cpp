@@ -1,6 +1,4 @@
-#include "Universe.h"
-
-#include <Notfound.h>
+#include <Universe.h>
 
 Universe::Universe(): crossBlankPieces_(), currentTimeline0_(0), present_(0) {
     auto notfound = std::make_shared<Piece>(PieceType::NotFound, ColorType::White, nullptr);
@@ -14,7 +12,7 @@ std::shared_ptr<Piece> Universe::returnNotFound() const {
 }
 
 
-void Universe::addTimeline(const std::shared_ptr<Timeline> timeline, bool isPositive) {
+void Universe::addTimeline(const std::shared_ptr<Timeline>& timeline, bool isPositive) {
     if (isPositive) {
         timelines_.push_back(timeline);
     }
@@ -41,7 +39,7 @@ int Universe::getCurrentTimeline0() const {
 }
 
 
-void Universe::setPiece(Vector xyzw, std::shared_ptr<Piece> piece) {
+void Universe::setPiece(const Vector& xyzw, const std::shared_ptr<Piece>& piece) const {
     int x = xyzw[0];
     int y = xyzw[1];
     int z = xyzw[2];
@@ -50,7 +48,7 @@ void Universe::setPiece(Vector xyzw, std::shared_ptr<Piece> piece) {
 }
 
 
-std::shared_ptr<Piece> Universe::getPiece(Vector xyzw) const {
+std::shared_ptr<Piece> Universe::getPiece(const Vector& xyzw) const {
     int x = xyzw[0];
     int y = xyzw[1];
     int z = xyzw[2];
@@ -66,11 +64,11 @@ std::shared_ptr<Piece> Universe::getPiece(Vector xyzw) const {
     return piece;
 }
 
-void Universe::addCrossBlankPiece(Vector place, Vector zw) {
+void Universe::addCrossBlankPiece(const Vector& place, const Vector& zw) {
     crossBlankPieces_[zw].push_back(place);
 }
 
-void Universe::checkCrossBlankPiece(Vector zw) {
+void Universe::checkCrossBlankPiece(const Vector& zw) {
     if (crossBlankPieces_.find(zw) != crossBlankPieces_.end()) {
         for (const auto& piecePos : crossBlankPieces_[zw]) {
             std::shared_ptr<Piece> piece = getPiece(piecePos);
@@ -79,7 +77,7 @@ void Universe::checkCrossBlankPiece(Vector zw) {
     }
 }
 
-Vector<int> Universe::getActiveTimelines() {
+Vector Universe::getActiveTimelines() {
     int length = getTimelineCount() - 1;
     int mid = 2 * currentTimeline0_;
     if (length > mid) return Vector{- currentTimeline0_, currentTimeline0_};

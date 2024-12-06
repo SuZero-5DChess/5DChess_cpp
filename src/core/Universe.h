@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <memory>
 #include <unordered_map>
 
 #include "Timeline.h"
@@ -13,18 +11,18 @@ public:
 
     std::shared_ptr<Piece> returnNotFound() const;
 
-    void addTimeline(const std::shared_ptr<Timeline> timeline, bool isPositive);
+    void addTimeline(const std::shared_ptr<Timeline>& timeline, bool isPositive);
     std::shared_ptr<Timeline> getTimeline(int index) const;
     int getTimelineCount() const;
     int getCurrentTimeline0() const;
 
-    void setPiece(Vector xyzw, std::shared_ptr<Piece> piece);
-    std::shared_ptr<Piece> getPiece(Vector xyzw) const;
+    void setPiece(const Vector& xyzw, const std::shared_ptr<Piece>& piece) const;
+    std::shared_ptr<Piece> getPiece(const Vector& xyzw) const;
 
-    void addCrossBlankPiece(Vector piece, Vector zw);
-    void checkCrossBlankPiece(Vector zw);
+    void addCrossBlankPiece(const Vector& piece, const Vector& zw);
+    void checkCrossBlankPiece(const Vector& zw);
 
-    Vector<int> getActiveTimelines();
+    Vector getActiveTimelines();
 
     void setPresent(int p);
     int getPresent() const;

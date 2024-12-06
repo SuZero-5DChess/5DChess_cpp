@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <memory>
-#include "Piece.h"
+#include <Piece.h>
 
 class Universe;
 const int BOARD_SIZE = 8;

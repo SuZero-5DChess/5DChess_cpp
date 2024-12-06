@@ -1,5 +1,4 @@
 #include "Piece.h"
-
 #include <algorithm>
 
 Piece::Piece(PieceType type, ColorType color, Universe* universe)
@@ -36,6 +35,11 @@ Vector Piece::getXYZW() const {
     return pos_xyzw_;
 }
 
+std::vector<Vector> Piece::getValidMoves() const {
+    return {};
+}
+
+
 void Piece::setValidMoves(std::vector<Vector> validMoves) {
     validMoves_ = validMoves;
 }
@@ -56,4 +60,16 @@ void Piece::removeValidMoves(std::vector<Vector> validMoves) {
 
 std::vector<Vector> Piece::readValidMoves() const {
     return validMoves_;
+}
+
+std::ostream& operator<<(std::ostream& os, const ColorType& color) {
+    switch (color) {
+        case ColorType::White:
+            os << "White";
+            break;
+        case ColorType::Black:
+            os << "Black";
+            break;
+    }
+    return os;
 }

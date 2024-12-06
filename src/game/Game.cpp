@@ -1,12 +1,13 @@
 #include "Game.h"
 
-#include <AfterPawn.h>
 #include <algorithm>
+#include <regex>
+
+#include <AfterPawn.h>
 #include <Bishop.h>
 #include <Knight.h>
 #include <Queen.h>
 #include <Rook.h>
-#include <bits/regex.h>
 
 Game::Game()
     : currentPlayer_(ColorType::White) {
