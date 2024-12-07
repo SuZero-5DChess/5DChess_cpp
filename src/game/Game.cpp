@@ -106,7 +106,6 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         piece = createAfterPawn(color, &universe_, piece->getXYZW());
     }
 
-    universe_.setPiece(dest, piece);
 
     // create new board
 
@@ -120,6 +119,7 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         // in-board move
         destTimeline->addBoardState(newDestBoard);
         newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
+        universe_.setPiece(Vector{dest[0], dest[1], dest[2] + 1, dest[3]}, piece);
         newDestBoard->updatePiecesMoves();
 
     }
@@ -127,6 +127,7 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         // to active board, no timeline created
         destTimeline->addBoardState(newDestBoard);
         newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
+        universe_.setPiece(Vector{dest[0], dest[1], dest[2] + 1, dest[3]}, piece);
 
         std::shared_ptr<Board> newOriginBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
         universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
@@ -153,6 +154,7 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         int timelineIndex = isPositive ? timelineCount - currentTimeline0 : - currentTimeline0 - 1;
         universe_.addTimeline(std::make_shared<Timeline>(createTimeline), isPositive);
         newDestBoard->setZW(Vector{createTimeline.getOffset(), timelineIndex});
+        universe_.setPiece(Vector{dest[0], dest[1], createTimeline.getOffset(), timelineIndex}, piece);
 
         std::shared_ptr<Board> newOriginBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
         universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
