@@ -1,6 +1,6 @@
 #include <Universe.h>
 
-Universe::Universe(): currentTimeline0_(-1), present_(0) {
+Universe::Universe(): currentTimeline0_(-1), present_(1) {
     auto notfound = std::make_shared<Piece>(PieceType::NotFound, ColorType::White, nullptr, Vector{-1, -1, -1, -1});
     notfound_ = notfound;
 }

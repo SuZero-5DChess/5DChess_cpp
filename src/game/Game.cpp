@@ -44,12 +44,14 @@ void Game::start() {
 
         std::vector<Vector> remainMoves = getMovablePieces();
         if (remainMoves.empty()) {
+            universe_.setPresent(universe_.getPresent() + 1);
             switchPlayer();
             std::cout << "Changed to Player" << currentPlayer_;
         } else {
             if (getYesNo()) {
                 continue;
             } else {
+                universe_.setPresent(universe_.getPresent() + 1);
                 switchPlayer();
             }
         }
@@ -133,6 +135,7 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         newDestBoard->updatePiecesMoves();
         newOriginBoard->updatePiecesMoves();
 
+
     }
     else {
         // to inactive board, create timeline
@@ -158,7 +161,7 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         newDestBoard->updatePiecesMoves();
         newOriginBoard->updatePiecesMoves();
 
-        universe_.setPresent(dest[2]);
+        universe_.setPresent(dest[2] < universe_.getPresent() ? dest[2] : universe_.getPresent());
     }
 }
 
