@@ -19,18 +19,16 @@ public:
     void setPiece(const Vector& xyzw, const std::shared_ptr<Piece>& piece) const;
     std::shared_ptr<Piece> getPiece(const Vector& xyzw) const;
 
-    void addCrossBlankPiece(const Vector& piece, const Vector& zw);
-    void checkCrossBlankPiece(const Vector& zw);
-
     Vector getActiveTimelines();
 
     void setPresent(int p);
     int getPresent() const;
 
+    std::shared_ptr<Universe> clone() const;
+
 private:
     std::vector<std::shared_ptr<Timeline>> timelines_;
     std::shared_ptr<Piece> notfound_;
-    std::unordered_map<Vector, std::vector<Vector>> crossBlankPieces_;
     int currentTimeline0_;
     int present_;
 };

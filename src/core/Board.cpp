@@ -44,7 +44,6 @@ void Board::updatePiecesMoves() {
     }
 }
 
-
 Vector Board::getZW() {
     return zw_;
 }
@@ -52,8 +51,6 @@ Vector Board::getZW() {
 void Board::setZW(Vector zw) {
     zw_ = zw;
 }
-
-
 
 void Board::printBoard() const {
     for (int y = BOARD_SIZE - 1; y >= 0; --y) {

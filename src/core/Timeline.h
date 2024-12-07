@@ -13,11 +13,12 @@ public:
     void initialize();
 
     void addBoardState(const std::shared_ptr<Board> board);
-
     std::shared_ptr<Board> getBoardState(int index) const;
 
     int getLength() const;
     int getOffset() const;
+
+    std::shared_ptr<Timeline> clone() const;
 
 private:
     Universe* universe_;

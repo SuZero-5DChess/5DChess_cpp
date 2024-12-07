@@ -95,6 +95,15 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         universe_.setPiece(pos + Vector{-1, 0, 0, 0}, nullptr);
     }
 
+    if (piece->getType() == PieceType::AfterPawn
+        && (forward_up == 1 ? dest[1] == 0 : dest[1] == 7)) {
+        piece = createQueen(color, &universe_, piece->getXYZW());
+    }
+
+    if (piece->getType() == PieceType::BeforePawn) {
+        piece = createAfterPawn(color, &universe_, piece->getXYZW());
+    }
+
     universe_.setPiece(dest, piece);
 
     // create new board
@@ -111,8 +120,6 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
         newDestBoard->updatePiecesMoves();
 
-        // check crossing blank board update
-        universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
     }
     else if (destTimeline->getLength() + destTimeline->getOffset() - 1 == dest[2]) {
         // to active board, no timeline created
@@ -126,8 +133,6 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         newDestBoard->updatePiecesMoves();
         newOriginBoard->updatePiecesMoves();
 
-        universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
-        universe_.checkCrossBlankPiece(Vector{dest[2] + 1, dest[3]});
     }
     else {
         // to inactive board, create timeline
@@ -152,8 +157,6 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
 
         newDestBoard->updatePiecesMoves();
         newOriginBoard->updatePiecesMoves();
-
-        universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
 
         universe_.setPresent(dest[2]);
     }

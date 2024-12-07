@@ -50,11 +50,6 @@ std::vector<Vector> BeforePawn::getValidMoves() const {
         }
     }
 
-    if (target51->getType() == PieceType::NotFound && target52 == nullptr) {
-        validMoves.push_back(entries[3]);
-        universe_->addCrossBlankPiece(pos, Vector{entry51[2], entry51[3]});
-    }
-
     return validMoves;
 }
 

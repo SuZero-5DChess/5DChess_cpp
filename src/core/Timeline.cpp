@@ -27,3 +27,15 @@ int Timeline::getLength() const {
 int Timeline::getOffset() const {
     return zOffset_;
 }
+
+std::shared_ptr<Timeline> Timeline::clone() const {
+    auto newTimeline = std::make_shared<Timeline>(universe_, parent_, zOffset_);
+
+    for (int x = 0; x < getLength(); x++) {
+        std::shared_ptr<Board> board = getBoardState(x + zOffset_);
+        auto newBoard = board->clone();
+        newTimeline->addBoardState(board);
+    }
+
+    return newTimeline;
+}

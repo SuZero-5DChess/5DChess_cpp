@@ -44,17 +44,22 @@ std::vector<Vector> AfterPawn::getValidMoves() const {
     std::shared_ptr<Piece> left_past_dest = universe_->getPiece(pos + Vector{-1, 0, -2, 0});
     std::shared_ptr<Piece> left_past_orig = universe_->getPiece(pos + Vector{-1, -2 * forward_up, -2, 0});
 
-    if (right_now_dest->getType() == PieceType::AfterPawn && right_now_dest->getColor() != color
+    if (right_now_dest && right_past_dest
+        && right_now_dest->getType() == PieceType::AfterPawn
+        && right_now_dest->getColor() != color
         && right_now_orig == nullptr
         && right_past_dest == nullptr
         && right_past_orig-> getType() == PieceType::AfterPawn && right_past_orig->getColor() != color) {
         validMoves.push_back(Vector{1, -1 * forward_up, 0, 0});
     }
 
-    if (left_now_dest->getType() == PieceType::AfterPawn && left_now_dest->getColor() != color
+    if (left_now_dest && left_past_dest
+        && left_now_dest->getType() == PieceType::AfterPawn
+        && left_now_dest->getColor() != color
         && left_now_orig == nullptr
         && left_past_dest == nullptr
-        && left_past_orig-> getType() == PieceType::AfterPawn && left_past_orig->getColor() != color) {
+        && left_past_orig-> getType() == PieceType::AfterPawn
+        && left_past_orig->getColor() != color) {
         validMoves.push_back(Vector{-1, -1 * forward_up, 0, 0});
     }
 
