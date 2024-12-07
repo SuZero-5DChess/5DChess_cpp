@@ -1,5 +1,6 @@
 #include "BeforePawn.h"
 
+#include <AfterPawn.h>
 #include <Notfound.h>
 #include <Universe.h>
 
@@ -37,22 +38,27 @@ std::vector<Vector> BeforePawn::getValidMoves() const {
     std::vector<Vector> validMoves;
 
     if (target21 == nullptr) {
-        validMoves.push_back(entry21);
+        validMoves.push_back(entries[0]);
         if (target22 == nullptr) {
-            validMoves.push_back(entry22);
+            validMoves.push_back(entries[1]);
         }
     }
     if (target51 == nullptr) {
-        validMoves.push_back(entry51);
+        validMoves.push_back(entries[2]);
         if (target22 == nullptr) {
-            validMoves.push_back(entry52);
+            validMoves.push_back(entries[3]);
         }
     }
 
     if (target51->getType() == PieceType::NotFound && target52 == nullptr) {
-        validMoves.push_back(entry52);
+        validMoves.push_back(entries[3]);
         universe_->addCrossBlankPiece(pos, Vector{entry51[2], entry51[3]});
     }
 
     return validMoves;
 }
+
+std::shared_ptr<Piece> BeforePawn::clone() const {
+    return std::make_shared<BeforePawn>(*this);
+}
+

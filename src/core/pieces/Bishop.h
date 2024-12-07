@@ -9,9 +9,8 @@ public:
     Bishop(ColorType color, Universe* universe, Vector xyzw);
     virtual ~Bishop();
 
-    void downdateDirection(Vector start, Vector direction);
-    void updateDirection(Vector start, Vector direction);
-    virtual std::vector<Vector> getValidMoves() const override;
+    std::vector<Vector> getValidMoves() const override;
+    std::shared_ptr<Piece> clone() const override;
 };
 
 std::shared_ptr<Piece> createBishop(ColorType color, Universe* universe, Vector xyzw);

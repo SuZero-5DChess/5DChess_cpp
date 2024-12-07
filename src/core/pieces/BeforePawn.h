@@ -9,7 +9,8 @@ public:
     BeforePawn(ColorType color, Universe* universe, Vector xyzw);
     virtual ~BeforePawn();
 
-    virtual std::vector<Vector> getValidMoves() const override;
+    std::vector<Vector> getValidMoves() const override;
+    std::shared_ptr<Piece> clone() const override;
 };
 
 std::shared_ptr<Piece> createBeforePawn(ColorType color, Universe* universe, Vector xyzw);

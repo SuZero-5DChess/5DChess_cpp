@@ -13,15 +13,6 @@ std::shared_ptr<Piece> createKnight(ColorType color, Universe* universe, Vector 
     return std::make_shared<Knight>(color, universe, xyzw);
 }
 
-void Knight::downdateDirection(Vector target) {
-    removeValidMoves({target});
-}
-
-void Knight::updateDirection(Vector target) {
-    appendValidMoves({target});
-}
-
-
 std::vector<Vector> Knight::getValidMoves() const {
     Vector pos = getXYZW();
     ColorType color = getColor();
@@ -34,9 +25,13 @@ std::vector<Vector> Knight::getValidMoves() const {
         std::shared_ptr<Piece> piece = universe_->getPiece(target);
         if (piece == nullptr
             || (piece->getType() != PieceType::NotFound && piece->getColor() != color)) {
-            validMoves.push_back(target);
+            validMoves.push_back(direction);
         }
     }
 
     return validMoves;
+}
+
+std::shared_ptr<Piece> Knight::clone() const {
+    return std::make_shared<Knight>(*this);
 }

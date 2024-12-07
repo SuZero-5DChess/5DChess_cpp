@@ -32,9 +32,27 @@ void Board::deletePiece(int x, int y) {
     grid_[x][y] = nullptr;
 }
 
+void Board::updatePiecesMoves() {
+    for (int x = 0; x < BOARD_SIZE; ++x) {
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            std::shared_ptr<Piece> piece = getPiece(x, y);
+            if (piece) {
+                piece->setXYZW(Vector{x, y, zw_[0], zw_[1]});
+                piece->setValidMoves(piece->getValidMoves());
+            }
+        }
+    }
+}
+
+
 Vector Board::getZW() {
     return zw_;
 }
+
+void Board::setZW(Vector zw) {
+    zw_ = zw;
+}
+
 
 
 void Board::printBoard() const {
@@ -58,8 +76,8 @@ std::shared_ptr<Board> Board::clone() const {
         for (int y = 0; y < BOARD_SIZE; y++) {
             std::shared_ptr<Piece> piece = getPiece(x, y);
             if (piece) {
-                auto newPiece = std::make_shared<Piece>(*piece);
-                newBoard->setPiece(x, y, newPiece);
+                auto newPiece = piece->clone();
+                newBoard->grid_[x][y] = newPiece;
             }
         }
     }

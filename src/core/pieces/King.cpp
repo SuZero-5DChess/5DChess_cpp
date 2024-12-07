@@ -26,7 +26,7 @@ std::vector<Vector> King::getValidMoves() const {
         std::shared_ptr<Piece> piece = universe_->getPiece(target);
         if (piece == nullptr
             || (piece->getType() != PieceType::NotFound && piece->getColor() != color)) {
-            validMoves.push_back(target);
+            validMoves.push_back(direction);
         }
     }
 
@@ -46,7 +46,7 @@ std::vector<Vector> King::getValidMoves() const {
             bool isMoved = rookPtr->getIsMoved();
             if (!isMoved) {
                 validMoves.push_back(
-                    Vector{2, color == ColorType::White ? 7 : 0, z, w}
+                    Vector{-2, 0, 0, 0}
                 );
             }
         }
@@ -61,7 +61,7 @@ std::vector<Vector> King::getValidMoves() const {
             bool isMoved = rookPtr->getIsMoved();
             if (!isMoved) {
                 validMoves.push_back(
-                    Vector{6, color == ColorType::White ? 7 : 0, z, w}
+                    Vector{2, 0, 0, 0}
                 );
             }
         }
@@ -69,6 +69,11 @@ std::vector<Vector> King::getValidMoves() const {
 
     return validMoves;
 }
+
+std::shared_ptr<Piece> King::clone() const {
+    return std::make_shared<King>(*this);
+}
+
 
 void King::setIsMoved() {
     isMoved_ = true;

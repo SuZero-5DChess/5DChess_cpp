@@ -8,4 +8,5 @@ public:
     virtual ~NotFound();
 
     virtual std::vector<Vector> getValidMoves() const override;
+    std::shared_ptr<Piece> clone() const override;
 };

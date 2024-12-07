@@ -28,7 +28,7 @@ std::vector<Vector> AfterPawn::getValidMoves() const {
         Vector targetPos = pos + entry;
 
         if (universe_->getPiece(targetPos) == nullptr) {
-            validMoves.push_back(targetPos);
+            validMoves.push_back(entry);
         }
     }
 
@@ -48,14 +48,14 @@ std::vector<Vector> AfterPawn::getValidMoves() const {
         && right_now_orig == nullptr
         && right_past_dest == nullptr
         && right_past_orig-> getType() == PieceType::AfterPawn && right_past_orig->getColor() != color) {
-        validMoves.push_back(pos + Vector{1, -1 * forward_up, 0, 0});
+        validMoves.push_back(Vector{1, -1 * forward_up, 0, 0});
     }
 
     if (left_now_dest->getType() == PieceType::AfterPawn && left_now_dest->getColor() != color
         && left_now_orig == nullptr
         && left_past_dest == nullptr
         && left_past_orig-> getType() == PieceType::AfterPawn && left_past_orig->getColor() != color) {
-        validMoves.push_back(pos + Vector{-1, -1 * forward_up, 0, 0});
+        validMoves.push_back(Vector{-1, -1 * forward_up, 0, 0});
     }
 
     std::vector<Vector> take_entries = {
@@ -69,9 +69,13 @@ std::vector<Vector> AfterPawn::getValidMoves() const {
         Vector targetPos = pos + entry;
         std::shared_ptr<Piece> targetPiece = universe_->getPiece(targetPos);
         if (targetPiece != nullptr && targetPiece->getColor() != color) {
-            validMoves.push_back(targetPos);
+            validMoves.push_back(entry);
         }
     }
 
     return validMoves;
+}
+
+std::shared_ptr<Piece> AfterPawn::clone() const {
+    return std::make_shared<AfterPawn>(*this);
 }

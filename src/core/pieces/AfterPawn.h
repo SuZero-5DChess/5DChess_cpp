@@ -9,6 +9,7 @@ public:
     virtual ~AfterPawn();
 
     std::vector<Vector> getValidMoves() const override;
+    std::shared_ptr<Piece> clone() const override;
 
 };
 

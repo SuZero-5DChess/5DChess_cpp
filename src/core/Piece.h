@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include "Vector.h"
 
@@ -39,6 +40,8 @@ public:
     void appendValidMoves(std::vector<Vector> validMoves);
     void removeValidMoves(std::vector<Vector> validMoves);
     std::vector<Vector> readValidMoves() const;
+
+    virtual std::shared_ptr<Piece> clone() const;
 
 protected:
     Universe* universe_;

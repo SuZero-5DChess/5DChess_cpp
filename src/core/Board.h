@@ -64,8 +64,10 @@ public:
     std::shared_ptr<Piece> getPiece(int x, int y) const;
     void setPiece(int x, int y, std::shared_ptr<Piece> piece);
     void deletePiece(int x, int y);
+    void updatePiecesMoves();
 
     Vector getZW();
+    void setZW(Vector zw);
 
     void printBoard() const;
 

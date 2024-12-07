@@ -28,9 +28,6 @@ void Game::initialize() {
 
     for (int x = 0; x <= 7 ; ++x) {
         for (int y : {0, 1, 6, 7}) {
-            std::shared_ptr<Piece> b0Piece = board0.getPiece(x, y);
-            b0Piece->setValidMoves(b0Piece->getValidMoves());
-
             std::shared_ptr<Piece> b1Piece = board1.getPiece(x, y);
             b1Piece->setValidMoves(b1Piece->getValidMoves());
         }
@@ -65,7 +62,6 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
     int forward_up = color == ColorType::White ? 1 : -1;
 
     // move
-    piece->setValidMoves(piece->getValidMoves());
     piece->setXYZW(dest);
 
     universe_.setPiece(pos, nullptr);
@@ -101,136 +97,9 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
 
     universe_.setPiece(dest, piece);
 
-
-    // check the start point and update
-    for (const auto& direction: queenDirections) {
-        Vector current_target = pos + direction;
-
-        while (true) {
-            std::shared_ptr<Piece> place = universe_.getPiece(current_target);
-            if (place != nullptr) {
-                PieceType type = place->getType();
-                if (type != PieceType::NotFound) {
-                    if (type == PieceType::BeforePawn || type == PieceType::AfterPawn) {
-                        break;
-                    }
-                    int count = 0;
-                    if (direction[0] == 0) count++;
-                    if (direction[1] == 0) count++;
-                    if (direction[2] == 0) count++;
-                    if (direction[3] == 0) count++;
-                    if (type == PieceType::Queen) {
-                        Queen* queenPtr = static_cast<Queen*>(place.get());
-                        queenPtr->updateDirection(pos, direction * -1);
-                        break;
-                    }
-                    else if (type == PieceType::Rook
-                        && count == 3) {
-                        Rook* rookPtr = static_cast<Rook*>(place.get());
-                        rookPtr->updateDirection(pos, direction * -1);
-                        break;
-                    }
-                    else if (type == PieceType::Bishop
-                        && count == 2) {
-                        Bishop* bishopPtr = static_cast<Bishop*>(place.get());
-                        bishopPtr->updateDirection(pos, direction * -1);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    for (const auto& direction: knightDirections) {
-        Vector current_target = pos + direction;
-        std::shared_ptr<Piece> place = universe_.getPiece(current_target);
-        if (place->getType() == PieceType::Knight) {
-            Knight* knightPtr = static_cast<Knight*>(place.get());
-            knightPtr->updateDirection(direction);
-        }
-    }
-
-    std::vector<Vector> pawnEntries = {
-        Vector{0, -1 * forward_up, 0, 0},
-        Vector{1, -1 * forward_up, 0, 0},
-        Vector{-1, -1 * forward_up, 0, 0},
-        Vector{0, -2 * forward_up, 0, 0},
-        Vector{0, 0, 0, -1 * forward_up},
-        Vector{0, 0, 2, -1 * forward_up},
-        Vector{0, 0, -2, -1 * forward_up},
-        Vector{0, 0, 0, -2 * forward_up},
-    };
-
-    for (const auto& direction: pawnEntries) {
-        Vector current_target = pos + direction;
-        std::shared_ptr<Piece> place = universe_.getPiece(current_target);
-        PieceType type = place->getType();
-        if (type == PieceType::BeforePawn || type == PieceType::AfterPawn) {
-            place->setValidMoves(place->getValidMoves());
-        }
-    }
-
-
-    // check the end point and update
-    for (const auto& direction: queenDirections) {
-        Vector current_target = pos + direction;
-
-        while (true) {
-            std::shared_ptr<Piece> place = universe_.getPiece(current_target);
-            if (place != nullptr) {
-                PieceType type = place->getType();
-                if (type != PieceType::NotFound) {
-                    if (type == PieceType::BeforePawn || type == PieceType::AfterPawn) {
-                        break;
-                    }
-                    int count = 0;
-                    if (direction[0] == 0) count++;
-                    if (direction[1] == 0) count++;
-                    if (direction[2] == 0) count++;
-                    if (direction[3] == 0) count++;
-                    if (type == PieceType::Queen) {
-                        Queen* queenPtr = static_cast<Queen*>(place.get());
-                        queenPtr->downdateDirection(pos, direction * -1);
-                        break;
-                    }
-                    else if (type == PieceType::Rook
-                        && count == 3) {
-                        Rook* rookPtr = static_cast<Rook*>(place.get());
-                        rookPtr->downdateDirection(pos, direction * -1);
-                        break;
-                    }
-                    else if (type == PieceType::Bishop
-                        && count == 2) {
-                        Bishop* bishopPtr = static_cast<Bishop*>(place.get());
-                        bishopPtr->downdateDirection(pos, direction * -1);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    for (const auto& direction: knightDirections) {
-        Vector current_target = pos + direction;
-        std::shared_ptr<Piece> place = universe_.getPiece(current_target);
-        if (place->getType() == PieceType::Knight) {
-            Knight* knightPtr = static_cast<Knight*>(place.get());
-            knightPtr->downdateDirection(direction);
-        }
-    }
-
-    for (const auto& direction: pawnEntries) {
-        Vector current_target = pos + direction;
-        std::shared_ptr<Piece> place = universe_.getPiece(current_target);
-        PieceType type = place->getType();
-        if (type == PieceType::BeforePawn || type == PieceType::AfterPawn) {
-            place->setValidMoves(place->getValidMoves());
-        }
-    }
-
     // create new board
 
-    std::shared_ptr<Board> newBoard = universe_.getTimeline(dest[3])->getBoardState(dest[2])->clone();
+    std::shared_ptr<Board> newDestBoard = universe_.getTimeline(dest[3])->getBoardState(dest[2])->clone();
 
     // time travel
 
@@ -238,17 +107,23 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
 
     if (pos[2] == dest[2] && pos[3] == dest[3]) {
         // in-board move
-        destTimeline->addBoardState(newBoard);
+        destTimeline->addBoardState(newDestBoard);
+        newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
+        newDestBoard->updatePiecesMoves();
 
         // check crossing blank board update
         universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
     }
     else if (destTimeline->getLength() + destTimeline->getOffset() - 1 == dest[2]) {
         // to active board, no timeline created
-        destTimeline->addBoardState(newBoard);
+        destTimeline->addBoardState(newDestBoard);
+        newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
+        newDestBoard->updatePiecesMoves();
 
-        std::shared_ptr<Board> originBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
-        universe_.getTimeline(pos[3])->addBoardState(originBoard);
+        std::shared_ptr<Board> newOriginBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
+        universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
+        newOriginBoard->setZW(Vector{pos[2] + 1, pos[3]});
+        newOriginBoard->updatePiecesMoves();
 
         universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
         universe_.checkCrossBlankPiece(Vector{dest[2] + 1, dest[3]});
@@ -260,11 +135,20 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
             destTimeline->getBoardState(dest[2]).get(),
             dest[2] + 1
         );
-        createTimeline.addBoardState(newBoard);
-        universe_.addTimeline(std::make_shared<Timeline>(createTimeline), forward_up);
+        createTimeline.addBoardState(newDestBoard);
 
-        std::shared_ptr<Board> originBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
-        universe_.getTimeline(pos[3])->addBoardState(originBoard);
+        int timelineCount = universe_.getTimelineCount();
+        int currentTimeline0 = universe_.getCurrentTimeline0();
+        int timelineIndex = forward_up ? timelineCount - currentTimeline0 : - currentTimeline0 - 1;
+
+        universe_.addTimeline(std::make_shared<Timeline>(createTimeline), forward_up);
+        newDestBoard->setZW(Vector{createTimeline.getOffset(), timelineIndex});
+        newDestBoard->updatePiecesMoves();
+
+        std::shared_ptr<Board> newOriginBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
+        universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
+        newOriginBoard->setZW(Vector{pos[2] + 1, pos[3]});
+        newOriginBoard->updatePiecesMoves();
 
         universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
 
@@ -349,14 +233,14 @@ std::vector<Vector> Game::readMove() {
             int g = std::stoi(match[7].str());
             int h = std::stoi(match[8].str());
 
-            Vector endPosition = Vector{e, f, g, h};
+            Vector endDirection = Vector{e, f, g, h} - startPosition;
 
             std::vector<Vector> dests = piece->readValidMoves();
 
             if (std::find(
                 dests.begin(),
                 dests.end(),
-                endPosition
+                endDirection
                 ) == dests.end()) {
                 std::cout << "Invalid end position";
                 continue;

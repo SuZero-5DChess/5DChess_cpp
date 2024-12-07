@@ -65,6 +65,11 @@ std::vector<Vector> Piece::readValidMoves() const {
     return validMoves_;
 }
 
+std::shared_ptr<Piece> Piece::clone() const {
+    return nullptr;
+}
+
+
 std::ostream& operator<<(std::ostream& os, const ColorType& color) {
     switch (color) {
         case ColorType::White:
