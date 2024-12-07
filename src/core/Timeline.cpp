@@ -15,7 +15,7 @@ void Timeline::addBoardState(const std::shared_ptr<Board> board) {
 std::shared_ptr<Board> Timeline::getBoardState(int index) const {
     int relativeIndex = index - zOffset_;
     if (relativeIndex >= 0 && relativeIndex < boards_.size()) {
-        return boards_[index];
+        return boards_[relativeIndex];
     }
     return nullptr;
 }

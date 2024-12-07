@@ -69,7 +69,7 @@ void Universe::addCrossBlankPiece(const Vector& place, const Vector& zw) {
 }
 
 void Universe::checkCrossBlankPiece(const Vector& zw) {
-    if (crossBlankPieces_.find(zw) != crossBlankPieces_.end()) {
+    if (crossBlankPieces_.contains(zw)) {
         for (const auto& piecePos : crossBlankPieces_[zw]) {
             std::shared_ptr<Piece> piece = getPiece(piecePos);
             piece->setValidMoves(piece->getValidMoves());
@@ -80,9 +80,9 @@ void Universe::checkCrossBlankPiece(const Vector& zw) {
 Vector Universe::getActiveTimelines() {
     int length = getTimelineCount() - 1;
     int mid = 2 * currentTimeline0_;
-    if (length > mid) return Vector{- currentTimeline0_, currentTimeline0_};
-    else if (length < mid) return Vector{currentTimeline0_ - length, length - currentTimeline0_};
-    else return Vector{- currentTimeline0_, length - currentTimeline0_};
+    if (length > mid) return Vector{- currentTimeline0_, currentTimeline0_ + 1};
+    else if (length < mid) return Vector{currentTimeline0_ - length - 1, length - currentTimeline0_};
+    else return Vector{- currentTimeline0_, currentTimeline0_};
 }
 
 void Universe::setPresent(int p) {

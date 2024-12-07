@@ -118,11 +118,12 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         // to active board, no timeline created
         destTimeline->addBoardState(newDestBoard);
         newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
-        newDestBoard->updatePiecesMoves();
 
         std::shared_ptr<Board> newOriginBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
         universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
         newOriginBoard->setZW(Vector{pos[2] + 1, pos[3]});
+
+        newDestBoard->updatePiecesMoves();
         newOriginBoard->updatePiecesMoves();
 
         universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
@@ -139,15 +140,17 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
 
         int timelineCount = universe_.getTimelineCount();
         int currentTimeline0 = universe_.getCurrentTimeline0();
-        int timelineIndex = forward_up ? timelineCount - currentTimeline0 : - currentTimeline0 - 1;
+        bool isPositive = forward_up == 1;
 
-        universe_.addTimeline(std::make_shared<Timeline>(createTimeline), forward_up);
+        int timelineIndex = isPositive ? timelineCount - currentTimeline0 : - currentTimeline0 - 1;
+        universe_.addTimeline(std::make_shared<Timeline>(createTimeline), isPositive);
         newDestBoard->setZW(Vector{createTimeline.getOffset(), timelineIndex});
-        newDestBoard->updatePiecesMoves();
 
         std::shared_ptr<Board> newOriginBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
         universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
         newOriginBoard->setZW(Vector{pos[2] + 1, pos[3]});
+
+        newDestBoard->updatePiecesMoves();
         newOriginBoard->updatePiecesMoves();
 
         universe_.checkCrossBlankPiece(Vector{pos[2] + 1, pos[3]});
@@ -177,7 +180,9 @@ std::vector<Vector> Game::getMovablePieces() {
         int turn = currentPlayer_ == ColorType::White ? 1 : 0;
         if ((iterTimeline->getLength() + iterTimeline->getOffset() - 1) % 2 != turn) { continue; }
 
-        std::vector<std::shared_ptr<Piece>> pieces = iterTimeline->getBoardState(iterTimeline->getLength() - 1)->getColorPieces(currentPlayer_);
+        std::vector<std::shared_ptr<Piece>> pieces = iterTimeline->getBoardState(
+            iterTimeline->getLength() - 1 + iterTimeline->getOffset()
+        )->getColorPieces(currentPlayer_);
         for (const auto &piece : pieces) {
             if (piece->readValidMoves().empty()) { continue; }
 

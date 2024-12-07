@@ -15,6 +15,15 @@ public:
 std::shared_ptr<Piece> createQueen(ColorType color, Universe* universe, Vector xyzw);
 
 const std::vector<Vector> queenDirections = {
+    Vector{1, 0, 0, 0},
+    Vector{-1, 0, 0, 0},
+    Vector{0, 1, 0, 0},
+    Vector{0, -1, 0, 0},
+    Vector{0, 0, 2, 0},
+    Vector{0, 0, -2, 0},
+    Vector{0, 0, 0, 1},
+    Vector{0, 0, 0, -1},
+
     Vector{1, 1, 0, 0},
     Vector{-1, 1, 0, 0},
     Vector{1, -1, 0, 0},

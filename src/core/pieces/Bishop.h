@@ -26,10 +26,10 @@ const std::vector<Vector> bishopDirections = {
     Vector{-1, 0, 2, 0},
     Vector{-1, 0, -2, 0},
 
-    Vector{0, 0, 2, 1},
-    Vector{0, 0, -2, 1},
-    Vector{0, 0, 2, -1},
-    Vector{0, 0, -2, -1},
+    Vector{1, 0, 0, 1},
+    Vector{-1, 0, 0, 1},
+    Vector{1, 0, 0, -1},
+    Vector{-1, 0, 0, -1},
 
     Vector{0, 1, 2, 0},
     Vector{0, 1, -2, 0},
