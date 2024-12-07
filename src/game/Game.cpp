@@ -120,7 +120,7 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         destTimeline->addBoardState(newDestBoard);
         newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
         universe_.setPiece(Vector{dest[0], dest[1], dest[2] + 1, dest[3]}, piece);
-        newDestBoard->updatePiecesMoves();
+        newDestBoard->updatePiecesXYZW();
 
     }
     else if (destTimeline->getLength() + destTimeline->getOffset() - 1 == dest[2]) {
@@ -133,8 +133,8 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
         newOriginBoard->setZW(Vector{pos[2] + 1, pos[3]});
 
-        newDestBoard->updatePiecesMoves();
-        newOriginBoard->updatePiecesMoves();
+        newDestBoard->updatePiecesXYZW();
+        newOriginBoard->updatePiecesXYZW();
 
 
     }
@@ -160,10 +160,17 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
         newOriginBoard->setZW(Vector{pos[2] + 1, pos[3]});
 
-        newDestBoard->updatePiecesMoves();
-        newOriginBoard->updatePiecesMoves();
+        newDestBoard->updatePiecesXYZW();
+        newOriginBoard->updatePiecesXYZW();
 
-        universe_.setPresent(dest[2] < universe_.getPresent() ? dest[2] : universe_.getPresent());
+        Vector activeTimeline = universe_.getActiveTimelines();
+
+        if (activeTimeline[0] <= timelineIndex && timelineIndex <= activeTimeline[1]) {
+            universe_.setPresent(dest[2] < universe_.getPresent() ? dest[2] : universe_.getPresent());
+        }
+        else {
+            universe_.setPresent(universe_.getPresent());
+        }
     }
 }
 
@@ -192,6 +199,7 @@ std::vector<Vector> Game::getMovablePieces() {
             iterTimeline->getLength() - 1 + iterTimeline->getOffset()
         )->getColorPieces(currentPlayer_);
         for (const auto &piece : pieces) {
+            piece->setValidMoves(piece->getValidMoves());
             if (piece->readValidMoves().empty()) { continue; }
 
             movablePieces.push_back(piece->getXYZW());
@@ -200,7 +208,6 @@ std::vector<Vector> Game::getMovablePieces() {
 
     return movablePieces;
 }
-
 
 void Game::switchPlayer() {
     currentPlayer_ = (currentPlayer_ == ColorType::White) ? ColorType::Black : ColorType::White;

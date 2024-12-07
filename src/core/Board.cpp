@@ -32,13 +32,12 @@ void Board::deletePiece(int x, int y) {
     grid_[x][y] = nullptr;
 }
 
-void Board::updatePiecesMoves() {
+void Board::updatePiecesXYZW() {
     for (int x = 0; x < BOARD_SIZE; ++x) {
         for (int y = 0; y < BOARD_SIZE; ++y) {
             std::shared_ptr<Piece> piece = getPiece(x, y);
             if (piece) {
                 piece->setXYZW(Vector{x, y, zw_[0], zw_[1]});
-                piece->setValidMoves(piece->getValidMoves());
             }
         }
     }
