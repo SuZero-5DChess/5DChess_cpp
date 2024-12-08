@@ -7,31 +7,103 @@
 #include <Universe.h>
 
 Vector parseChessPosition(const std::string& pos) {
-    // Remove specified symbols
-    std::string cleanPos;
-    for (char c : pos) {
-        if (std::isalnum(c) || c == '=') {
-            cleanPos += c;
-        }
-    }
-
-    // Remove promotion symbols (e.g., '=Q', '=q')
-    size_t equalPos = cleanPos.find('=');
-    if (equalPos != std::string::npos) {
-        cleanPos = cleanPos.substr(0, equalPos);
-    }
-
-    if (cleanPos.length() < 2) {
+    if (pos.length() != 2) {
         throw std::runtime_error("Invalid position format: " + pos);
     }
 
-    char file = cleanPos[cleanPos.length() - 2];
-    char rank = cleanPos[cleanPos.length() - 1];
+    char file = pos[0];
+    char rank = pos[1];
 
     int x = std::tolower(file) - 'a';
     int y = 8 - (rank - '0');
 
     return Vector{x, y};
+}
+
+struct MoveNotation {
+    PieceType pieceType;
+    Vector startXY; // starting x and y, (-1, -1) if not specified
+    Vector endXY;   // ending x and y
+};
+
+PieceType charToPieceType(char c) {
+    switch (c) {
+    case 'K':
+        return PieceType::King;
+    case 'Q':
+        return PieceType::Queen;
+    case 'R':
+        return PieceType::Rook;
+    case 'B':
+        return PieceType::Bishop;
+    case 'N':
+        return PieceType::Knight;
+    default:
+        return PieceType::NotFound;
+    }
+}
+
+MoveNotation parseMoveNotation(const std::string& notation) {
+    // Implement regex patterns to match different move formats
+    std::regex pawnMoveDest("^([a-h][1-8])$");
+    std::regex pieceMoveDest("^([KQRBN])([a-h][1-8])$");
+    std::regex pawnMoveFull("^([a-h][1-8])([a-h][1-8])$");
+    std::regex pieceMoveFull("^([KQRBN])([a-h][1-8])([a-h][1-8])$");
+    std::regex pieceMoveDisambig("^([KQRBN])([a-h1-8]?)([a-h][1-8])$");
+    std::regex pawnCapture("^([a-h])x([a-h][1-8])$");
+    std::regex pieceCapture("^([KQRBN])x([a-h][1-8])$");
+
+    std::smatch match;
+
+    if (std::regex_match(notation, match, pawnMoveDest)) {
+        // Pawn move to destination
+        Vector endXY = parseChessPosition(match[1]);
+        return {PieceType::AllPawn, {-1, -1}, endXY};
+    } else if (std::regex_match(notation, match, pieceMoveDest)) {
+        // Piece move to destination
+        PieceType pieceType = charToPieceType(match[1].str()[0]);
+        Vector endXY = parseChessPosition(match[2]);
+        return {pieceType, {-1, -1}, endXY};
+    } else if (std::regex_match(notation, match, pawnMoveFull)) {
+        // Pawn move with start and end positions
+        Vector startXY = parseChessPosition(match[1]);
+        Vector endXY = parseChessPosition(match[2]);
+        return {PieceType::AllPawn, startXY, endXY};
+    } else if (std::regex_match(notation, match, pieceMoveFull)) {
+        // Piece move with start and end positions
+        PieceType pieceType = charToPieceType(match[1].str()[0]);
+        Vector startXY = parseChessPosition(match[2]);
+        Vector endXY = parseChessPosition(match[3]);
+        return {pieceType, startXY, endXY};
+    } else if (std::regex_match(notation, match, pieceMoveDisambig)) {
+        // Piece move with disambiguation
+        PieceType pieceType = charToPieceType(match[1].str()[0]);
+        std::string disambig = match[2];
+        Vector endXY = parseChessPosition(match[3]);
+        Vector startXY = {-1, -1};
+        if (!disambig.empty()) {
+            char d = disambig[0];
+            if (d >= 'a' && d <= 'h') {
+                startXY = Vector{std::tolower(d) - 'a', startXY[1]};
+            } else if (d >= '1' && d <= '8') {
+                startXY = Vector{startXY[0], 8 - (d - '0')};
+            }
+        }
+        return {pieceType, startXY, endXY};
+    } else if (std::regex_match(notation, match, pawnCapture)) {
+        // Pawn capture
+        Vector startXY = {-1, -1};
+        startXY = Vector{std::tolower(match[1].str()[0]) - 'a', startXY[1]};
+        Vector endXY = parseChessPosition(match[2]);
+        return {PieceType::AllPawn, startXY, endXY};
+    } else if (std::regex_match(notation, match, pieceCapture)) {
+        // Piece capture
+        PieceType pieceType = charToPieceType(match[1].str()[0]);
+        Vector endXY = parseChessPosition(match[2]);
+        return {pieceType, {-1, -1}, endXY};
+    } else {
+        throw std::runtime_error("Invalid move notation: " + notation);
+    }
 }
 
 PieceType determinePieceType(const std::string& move) {
@@ -104,10 +176,14 @@ Vector parsePositionWithZW(const std::string& posPart, ColorType currentPlayer, 
         // Parse position
         std::string position = posPart.substr(closeParen + 1);
         if (position.empty()) {
-            // Handle cases where no position is specified after the parentheses
-            // For starting positions, you may need to infer the position from context
-            // For this example, we'll throw an error
             throw std::runtime_error("Position missing after ZW notation in move: " + posPart);
+        }
+        // Adjust here
+        char firstChar = position[0];
+        if (firstChar == 'K' || firstChar == 'Q' || firstChar == 'R' || firstChar == 'B' || firstChar == 'N') {
+            // Optionally, store the piece type if needed
+            // Remove the piece notation
+            position = position.substr(1);
         }
         Vector xy = parseChessPosition(position);
         x = xy[0];
@@ -119,12 +195,21 @@ Vector parsePositionWithZW(const std::string& posPart, ColorType currentPlayer, 
         if (posPart.empty()) {
             throw std::runtime_error("Position missing in move: " + posPart);
         }
-        Vector xy = parseChessPosition(posPart);
+        std::string position = posPart;
+        // Adjust here
+        char firstChar = position[0];
+        if (firstChar == 'K' || firstChar == 'Q' || firstChar == 'R' || firstChar == 'B' || firstChar == 'N') {
+            // Optionally, store the piece type if needed
+            // Remove the piece notation
+            position = position.substr(1);
+        }
+        Vector xy = parseChessPosition(position);
         x = xy[0];
         y = xy[1];
     }
     return Vector{x, y, z, w};
 }
+
 
 
 std::vector<Vector> processMove(const std::string& move, int round, ColorType currentPlayer, std::shared_ptr<Universe> universe) {
@@ -165,16 +250,24 @@ std::vector<Vector> processMove(const std::string& move, int round, ColorType cu
             trimmedMove.erase(parenPos, parenEnd - parenPos + 1);
         }
 
-        // Parse the move to extract the destination position and the piece type
-        PieceType pieceType = determinePieceType(trimmedMove);
-        Vector endXY = parseChessPosition(trimmedMove);
+        // Parse the move to extract the piece type, starting and ending positions
+        MoveNotation moveNotation = parseMoveNotation(trimmedMove);
+        PieceType pieceType = moveNotation.pieceType;
+        Vector endXY = moveNotation.endXY;
+        Vector startXY = moveNotation.startXY;
 
         endPos = {endXY[0], endXY[1], endZ, endW};
 
-        startPos = universe
-            ->getTimeline(startW)
-            ->getBoardState(startZ)
-            ->getStartWithTypeColorDest(pieceType, currentPlayer, endPos);
+        if (startXY[0] != -1 && startXY[1] != -1) {
+            // Starting position is provided in the notation
+            startPos = {startXY[0], startXY[1], startZ, startW};
+        } else {
+            // No starting position provided, infer it
+            startPos = universe
+                ->getTimeline(startW)
+                ->getBoardState(startZ)
+                ->getStartWithTypeColorDest(pieceType, currentPlayer, endPos);
+        }
     } else {
         // Handle '>' or '>>' notation
         std::string delimiter = (trimmedMove.find(">>") != std::string::npos) ? ">>" : ">";

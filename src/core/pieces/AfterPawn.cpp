@@ -70,7 +70,7 @@ std::vector<Vector> AfterPawn::getValidMoves() const {
         Vector{0, 0, -2, -1 * forward_up},
     };
 
-    for (const auto& entry: entries) {
+    for (const auto& entry: take_entries) {
         Vector targetPos = pos + entry;
         std::shared_ptr<Piece> targetPiece = universe_->getPiece(targetPos);
         if (targetPiece != nullptr && targetPiece->getColor() != color) {

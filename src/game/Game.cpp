@@ -1,7 +1,6 @@
 #include "Game.h"
 
 #include <regex>
-
 #include <AfterPawn.h>
 #include <parser.h>
 #include <Queen.h>
@@ -45,6 +44,43 @@ void Game::initializeGame() {
         7.(0T7)Qg3h4/(0T7)Nc6b4
         8.(0T8)Nb1a3/(0T8)Nb4d3
         9.(0T9)c2d3/(0T9)Qd8e7
+        10.(0T10)Na3c4/(0T10)Bd6c5
+        11.(0T11)a2a4/(0T11)b7b6
+        12.(0T12)a4a5/(0T12)Bc8b7
+        13.(0T13)a5b6/(0T13)a7b6
+        14.(0T14)Ra1a8/(0T14)Bb7a8
+        15.(0T15)Nc4e5/(0T15)b6b5
+        16.(0T16)Ne5g4/(0T16)Nf6g4
+        17.(0T17)Qh4g4/(0T17)Qe7f6
+        18.(0T18)Qg4g3/(0T18)Bc5d6
+        19.(0T19)Qg3g4/(0T19)Qf6g6
+        20.(0T20)Qg4g6/(0T20)h7g6
+        21.(0T21)e3e4/(0T21)f7f5
+        22.(0T22)Nf3g5/(0T22)Bd6e7
+        23.(0T23)Ng5h3/(0T23)f5e4
+        24.(0T24)Nh3f4/(0T24)e4d3
+        25.(0T25)f2f3/(0T25)Ba8d5
+        26.(0T26)Nf4g6/(0T26)Ke8d8
+        27.(0T27)Ng6e7/(0T27)Kd8e7
+        28.(0T28)Bc1a3/(0T28)d7d6
+        29.(0T29)Ke1g1/(0T29)g7g5
+        30.(0T30)g2g4/(0T30)Rg8f8
+        31.(0T31)Ba3b2/(0T31)e6e5
+        32.(0T32)Rf1e1/(0T32)Ke7e6
+        33.(0T33)Bb2d4/(0T33)Bd5f3
+        34.(0T34)h2h3/(0T34)Rf8f4
+        35.(0T35)Kg1h2/(0T35)Rf4d4
+        36.(0T36)Re1f1/(0T36)Bf3e2
+        37.(0T37)Rf1f2/(0T37)Rd4f4
+        38.(0T38)Rf2>>(0T26)f2/(1T26)Be7f6
+        39.(1T27)Ke1g1/(1T27)Rg8h8
+        40.(1T28)Rf1e1/(1T28)Bf6>>(1T26)f4
+        41.(-1T27)Ke1g1/(-1T27)Be7h4
+        42.(1T29)Nf4>(-1T28)f4/(-1T28)Ke8f7
+        43.(-1T29)Bc1a3/(-1T29)Bh4>(1T29)h2
+        44.(1T30)Kg1f1 (-1T30)Ba3e7/(-1T30)Kf7e7 (1T30)Bh2g1
+        45.(1T31)Kf1g1 (-1T31)Nf4g6/(1T31)Bd5c4 (-1T31)Ke7d8
+        46.(1T32)Re1e6 (-1T32)Rf1e1
         )";
 
     notationStream_ = std::istringstream(notation);
@@ -152,15 +188,10 @@ void Game::start() {
 void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
     Vector pos = piece->getXYZW();
     ColorType color = piece->getColor();
-    int forward_up = color == ColorType::White ? 1 : -1;
-
-    // move
-    piece->setXYZW(dest);
-
-    universe_.setPiece(pos, nullptr);
-
+    int forward_up = (color == ColorType::White) ? 1 : -1;
 
     // take
+
     std::shared_ptr<Piece> destPiece = universe_.getPiece(dest);
 
     if (destPiece != nullptr) {
@@ -172,31 +203,6 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
             exit(0);
         }
     }
-
-    Vector enRight = {1, -1 * forward_up, 0, 0};
-    Vector enLeft = {-1, -1 * forward_up, 0, 0};
-
-    if (piece->getType() == PieceType::AfterPawn
-        && dest - pos == enRight
-        && destPiece == nullptr) {
-        universe_.setPiece(pos + Vector{1, 0, 0, 0}, nullptr);
-    }
-
-    if (piece->getType() == PieceType::AfterPawn
-        && dest - pos == enLeft
-        && destPiece == nullptr) {
-        universe_.setPiece(pos + Vector{-1, 0, 0, 0}, nullptr);
-    }
-
-    if (piece->getType() == PieceType::AfterPawn
-        && (forward_up == 1 ? dest[1] == 0 : dest[1] == 7)) {
-        piece = createQueen(color, &universe_, piece->getXYZW());
-    }
-
-    if (piece->getType() == PieceType::BeforePawn) {
-        piece = createAfterPawn(color, &universe_, piece->getXYZW());
-    }
-
 
     // create new board
 
@@ -210,7 +216,58 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         // in-board move
         destTimeline->addBoardState(newDestBoard);
         newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
-        universe_.setPiece(Vector{dest[0], dest[1], dest[2] + 1, dest[3]}, piece);
+
+        // move
+        piece->setXYZW(dest + Vector{0, 0, 1, 0});
+        universe_.setPiece(pos + Vector{0, 0, 1, 0}, nullptr);
+
+        // en pass
+        Vector enRight = {1, -1 * forward_up, 0, 0};
+        Vector enLeft = {-1, -1 * forward_up, 0, 0};
+
+        if (piece->getType() == PieceType::AfterPawn
+            && dest - pos == enRight
+            && destPiece == nullptr) {
+            universe_.setPiece(pos + Vector{1, 0, 1, 0}, nullptr);
+        }
+
+        if (piece->getType() == PieceType::AfterPawn
+            && dest - pos == enLeft
+            && destPiece == nullptr) {
+            universe_.setPiece(pos + Vector{-1, 0, 1, 0}, nullptr);
+        }
+
+        if (piece->getType() == PieceType::AfterPawn
+            && (forward_up == 1 ? dest[1] == 0 : dest[1] == 7)) {
+            piece = createQueen(color, &universe_, piece->getXYZW());
+        }
+
+        if (piece->getType() == PieceType::BeforePawn) {
+            piece = createAfterPawn(color, &universe_, piece->getXYZW());
+        }
+
+        // castle
+        if (piece->getType() == PieceType::King) {
+            Vector direction = dest - pos;
+            if (direction[0] == 2) {
+                Vector rookPos = Vector{7, forward_up == 1 ? 7 : 0, pos[2] + 1, pos[3]};
+                Vector rookDest = Vector{5, forward_up == 1 ? 7 : 0, pos[2] + 1, pos[3]};
+                std::shared_ptr<Piece> rook = universe_.getPiece(rookPos);
+                rook->setXYZW(rookDest);
+                universe_.setPiece(rookPos, nullptr);
+                universe_.setPiece(rookDest, rook);
+            }
+            if (direction[0] == -2) {
+                Vector rookPos = Vector{0, forward_up == 1 ? 7 : 0, pos[2] + 1, pos[3]};
+                Vector rookDest = Vector{3, forward_up == 1 ? 7 : 0, pos[2] + 1, pos[3]};
+                std::shared_ptr<Piece> rook = universe_.getPiece(rookPos);
+                rook->setXYZW(rookDest);
+                universe_.setPiece(rookPos, nullptr);
+                universe_.setPiece(rookDest, rook);
+            }
+        }
+
+        universe_.setPiece(dest + Vector{0, 0, 1, 0}, piece);
         newDestBoard->updatePiecesXYZW();
 
     }
@@ -218,10 +275,12 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         // to active board, no timeline created
         destTimeline->addBoardState(newDestBoard);
         newDestBoard->setZW(Vector{dest[2] + 1, dest[3]});
-        universe_.setPiece(Vector{dest[0], dest[1], dest[2] + 1, dest[3]}, piece);
+        piece->setXYZW(dest + Vector{0, 0, 1, 0});
+        universe_.setPiece(dest + Vector{0, 0, 1, 0}, piece);
 
         std::shared_ptr<Board> newOriginBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
         universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
+        universe_.setPiece(pos + Vector{0, 0, 1, 0}, nullptr);
         newOriginBoard->setZW(Vector{pos[2] + 1, pos[3]});
 
         newDestBoard->updatePiecesXYZW();
@@ -246,10 +305,12 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
         universe_.addTimeline(std::make_shared<Timeline>(createTimeline), isPositive);
         newDestBoard->setZW(Vector{createTimeline.getOffset(), timelineIndex});
         universe_.setPiece(Vector{dest[0], dest[1], createTimeline.getOffset(), timelineIndex}, piece);
+        piece->setXYZW(Vector{dest[0], dest[1], createTimeline.getOffset(), timelineIndex});
 
         std::shared_ptr<Board> newOriginBoard = universe_.getTimeline(pos[3])->getBoardState(pos[2])->clone();
         universe_.getTimeline(pos[3])->addBoardState(newOriginBoard);
         newOriginBoard->setZW(Vector{pos[2] + 1, pos[3]});
+        universe_.setPiece(pos + Vector{0, 0, 1, 0}, nullptr);
 
         newDestBoard->updatePiecesXYZW();
         newOriginBoard->updatePiecesXYZW();
