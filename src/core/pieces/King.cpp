@@ -7,7 +7,7 @@
 #include <Universe.h>
 
 King::King(ColorType color, Universe* universe, Vector xyzw)
-    : Piece(PieceType::King, color, universe, xyzw){}
+    :isMoved_(false), Piece(PieceType::King, color, universe, xyzw){}
 
 King::~King() {}
 
@@ -41,14 +41,12 @@ std::vector<Vector> King::getValidMoves() const {
         Vector{0, color == ColorType::White ? 7 : 0, z, w}
     );
     if (rook1->getType() == PieceType::Rook) {
-        if (typeid(*rook1) != typeid(Rook)) {
-            Rook* rookPtr = static_cast<Rook*>(rook1.get());
-            bool isMoved = rookPtr->getIsMoved();
-            if (!isMoved) {
-                validMoves.push_back(
-                    Vector{-2, 0, 0, 0}
-                );
-            }
+        Rook* rookPtr = static_cast<Rook*>(rook1.get());
+        bool isMoved = rookPtr->getIsMoved();
+        if (!isMoved) {
+            validMoves.push_back(
+                Vector{-2, 0, 0, 0}
+            );
         }
     }
 
@@ -56,14 +54,12 @@ std::vector<Vector> King::getValidMoves() const {
         Vector{7, color == ColorType::White ? 7 : 0, z, w}
     );
     if (rook2->getType() == PieceType::Rook) {
-        if (typeid(*rook2) != typeid(Rook)) {
-            Rook* rookPtr = static_cast<Rook*>(rook2.get());
-            bool isMoved = rookPtr->getIsMoved();
-            if (!isMoved) {
-                validMoves.push_back(
-                    Vector{2, 0, 0, 0}
-                );
-            }
+        Rook* rookPtr = static_cast<Rook*>(rook2.get());
+        bool isMoved = rookPtr->getIsMoved();
+        if (!isMoved) {
+            validMoves.push_back(
+                Vector{2, 0, 0, 0}
+            );
         }
     }
 

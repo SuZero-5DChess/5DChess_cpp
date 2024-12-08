@@ -35,38 +35,72 @@ void Game::initialize() {
 void Game::initializeGame() {
     std::string notation =
         R"(
-1.(0T1)Ng1f3/(0T1)Ng8f6
-
-2.(0T2)d2d4/(0T2)d7d5
-3.(0T3)c2c3/(0T3)c7c6
-4.(0T4)Bc1f4/(0T4)Bc8f5
-5.(0T5)e2e3/(0T5)e7e6
-6.(0T6)Bf1d3/(0T6)Bf5g6
-7.(0T7)Bd3g6/(0T7)h7g6
-8.(0T8)Nb1d2/(0T8)Bf8d6
-9.(0T9)Bf4d6/(0T9)Qd8d6
-10.(0T10)Nf3e5/(0T10)Nb8d7
-11.(0T11)Nd2f3/(0T11)Rh8h5
-12.(0T12)Ne5d7/(0T12)Qd6d7
-13.(0T13)Qd1e2/(0T13)Qd7d6
-14.(0T14)Nf3e5/(0T14)Rh5e5
-15.(0T15)d4e5/(0T15)Qd6e5
-16.(0T16)Qe2f3/(0T16)d5d4
-17.(0T17)Qf3g3/(0T17)Qe5b5
-18.(0T18)Qg3h4/(0T18)Qb5>>(0T15)e2
-19.(-1T16)Ke1e2/(-1T16)Nf6e4
-20.(0T19)Qh4>>(0T1)h4/(1T1)Ng8f6
-21.(1T2)e2e3/(1T2)d7d5
-22.(1T3)Qh4f6/(1T3)g7f6
-23.(1T4)Qd1h5/(1T4)Bc8e6
-24.(1T5)Bf1b5/(1T5)c7c6
-25.(1T6)Qh5>>(1T4)f7/(2T4)Ke8f7
-26.(2T5)Qd1h5/(2T5)Kf7g8
-27.(2T6)Bf1b5/(1T6)Qd8>>(1T4)d6
-28.(-2T5)Qh5f7/(-2T5)Ke8f7
-29.(-2T6)Bf1b5/(-2T6)Kf7>>(-2T5)f7
-30.(-3T6)Bf1b5
-
+1. Nf3 / Nf6
+2. d4 / d5
+3. c3 / c6
+4. Bf4 / Bf5
+5. e3 / e6
+6. Bd3 / Bxd3
+7. Qxd3 / Bd6
+8. Bxd6 / Qxd6
+9. Nbd2 / Nbd7
+10. Qc2 / Qc7
+11. Qb3 / Qb6
+12. a4 / Qxb3
+13. Nxb3 / Ne4
+14. Nbd2 / Ndf6
+15. Nxe4 / Nxe4
+16. Nd2 / Nd6
+17. Kg1 / Kg8
+18. f4 / f5
+19. a5 / b5
+20. b4 / Kh8
+21. Kh1 / Rg8
+22. h4 / Raf8
+23. Rf3 / Rf6
+24. Rg1 / Rh6
+25. Rh3 / Rg6
+26. Kh2 / Rg4
+27. Rf1 / Rf8
+28. Rff3 / Ne8
+29. Kh1 / Nf6
+30. Rh2 / Nh5
+31. Kg1 / Rf6
+32. Rfh3 / e5
+33. dxe5 / Rfg6
+34. Nf3 / h6
+35. Ng5 / Kg8
+36. Kf1 / hxg5
+37. hxg5 / Ng3
+38. Rxg3 / Rxg3
+39. Kf2 / Rg4
+40. g3 / c5
+41. Kf3 / cxb4
+42. Rd2 / Re6
+43. Rxd5 / Re8
+44. cxb4 / Rc8
+45. e6 / Kh7
+46. Rc5 / Rd8
+47. Rc1 / Rh4
+48. gxh4 / Rd2
+49. g6 / Kh6
+50. Rh1 / Rc2
+51. (0T51)Rh1>>(0T39)h1~ (>L1) / (1T39)Rh6
+52. (1T40)Rxh6 / (1T40)gxh6
+53. (1T41)Rxh6 / (1T41)Rxe3
+54. (1T42)Rg6 / (1T42)Kf8
+55. (1T43)Rf6 / (1T43)Kg8
+56. (1T44)Rg6 / (1T44)Kf8
+57. (1T45)Rf6 / (1T45)Kg8
+58. (1T46)Rg6 / (1T46)Kf8
+59. (1T47)Rf6 / (1T47)Kg8
+60. (1T48)Rg6 / (1T48)Kf8
+61. (1T49)Rh6 / (0T51)Rc2>>x(0T10)c2~ (>L-1)
+62. (-1T11)Ke1>>(0T11)d1~ (>L2) / (-1T11)Rxd2 (2T11)Qb6
+63. (-1T12)Nxd2 (2T12)Nb3 / (2T12)Qa6 (-1T12)Ng4
+64. (-1T13)Rhf1 (2T13)Ng5 / (2T13)Ng4 (-1T13)Qxh2
+65. (-1T14)Nf3 (2T14)Nxh7 / (-1T14)Qxg2 (2T14)Rxh7
+66. (2T15)Qxh7 (-1T15)Rg1 / (2T15)Nxe3 (-1T15)Nxe3
         )";
 
     notationStream_ = std::istringstream(notation);
@@ -240,6 +274,10 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
                 Vector rookDest = Vector{5, forward_up == 1 ? 7 : 0, pos[2] + 1, pos[3]};
                 std::shared_ptr<Piece> rook = universe_.getPiece(rookPos);
                 rook->setXYZW(rookDest);
+                Rook* rookPtr = static_cast<Rook*>(rook.get());
+                rookPtr->setIsMoved();
+                King* kingPtr = static_cast<King*>(piece.get());
+                kingPtr->setIsMoved();
                 universe_.setPiece(rookPos, nullptr);
                 universe_.setPiece(rookDest, rook);
             }
@@ -248,6 +286,10 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
                 Vector rookDest = Vector{3, forward_up == 1 ? 7 : 0, pos[2] + 1, pos[3]};
                 std::shared_ptr<Piece> rook = universe_.getPiece(rookPos);
                 rook->setXYZW(rookDest);
+                Rook* rookPtr = static_cast<Rook*>(rook.get());
+                rookPtr->setIsMoved();
+                King* kingPtr = static_cast<King*>(piece.get());
+                kingPtr->setIsMoved();
                 universe_.setPiece(rookPos, nullptr);
                 universe_.setPiece(rookDest, rook);
             }

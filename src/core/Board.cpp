@@ -96,7 +96,7 @@ std::vector<std::shared_ptr<Piece>> Board::getColorPieces(ColorType color) const
     return pieces;
 }
 
-Vector Board::getStartWithTypeColorDest(PieceType type, ColorType color, Vector dest) const {
+Vector Board::getStartWithTypeColorDest(PieceType type, ColorType color, int startX, Vector dest) const {
     for (int x = 0; x < BOARD_SIZE; x++) {
         for (int y = 0; y < BOARD_SIZE; y++) {
             std::shared_ptr<Piece> piece = getPiece(x, y);
@@ -117,6 +117,7 @@ Vector Board::getStartWithTypeColorDest(PieceType type, ColorType color, Vector 
                 dest - piece->getXYZW()
                 ) != dests.end()
             ) {
+                if (startX != -1 && startX != piece->getXYZW()[0]) { continue; }
                 return piece->getXYZW();
             }
         }

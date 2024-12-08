@@ -210,8 +210,6 @@ Vector parsePositionWithZW(const std::string& posPart, ColorType currentPlayer, 
     return Vector{x, y, z, w};
 }
 
-
-
 std::vector<Vector> processMove(const std::string& move, int round, ColorType currentPlayer, std::shared_ptr<Universe> universe) {
     int startZ, startW, endZ, endW;
     Vector startPos, endPos;
@@ -266,7 +264,7 @@ std::vector<Vector> processMove(const std::string& move, int round, ColorType cu
             startPos = universe
                 ->getTimeline(startW)
                 ->getBoardState(startZ)
-                ->getStartWithTypeColorDest(pieceType, currentPlayer, endPos);
+                ->getStartWithTypeColorDest(pieceType, currentPlayer, startXY[0], endPos);
         }
     } else {
         // Handle '>' or '>>' notation
