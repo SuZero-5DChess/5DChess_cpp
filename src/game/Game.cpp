@@ -35,52 +35,38 @@ void Game::initialize() {
 void Game::initializeGame() {
     std::string notation =
         R"(
-        1.(0T1)e2e3/(0T1)Ng8f6
-        2.(0T2)b2b4/(0T2)e7e6
-        3.(0T3)Qd1f3/(0T3)Nb8c6
-        4.(0T4)Qf3g3/(0T4)Bf8b4
-        5.(0T5)Ng1f3/(0T5)Rh8g8
-        6.(0T6)Bf1d3/(0T6)Bb4d6
-        7.(0T7)Qg3h4/(0T7)Nc6b4
-        8.(0T8)Nb1a3/(0T8)Nb4d3
-        9.(0T9)c2d3/(0T9)Qd8e7
-        10.(0T10)Na3c4/(0T10)Bd6c5
-        11.(0T11)a2a4/(0T11)b7b6
-        12.(0T12)a4a5/(0T12)Bc8b7
-        13.(0T13)a5b6/(0T13)a7b6
-        14.(0T14)Ra1a8/(0T14)Bb7a8
-        15.(0T15)Nc4e5/(0T15)b6b5
-        16.(0T16)Ne5g4/(0T16)Nf6g4
-        17.(0T17)Qh4g4/(0T17)Qe7f6
-        18.(0T18)Qg4g3/(0T18)Bc5d6
-        19.(0T19)Qg3g4/(0T19)Qf6g6
-        20.(0T20)Qg4g6/(0T20)h7g6
-        21.(0T21)e3e4/(0T21)f7f5
-        22.(0T22)Nf3g5/(0T22)Bd6e7
-        23.(0T23)Ng5h3/(0T23)f5e4
-        24.(0T24)Nh3f4/(0T24)e4d3
-        25.(0T25)f2f3/(0T25)Ba8d5
-        26.(0T26)Nf4g6/(0T26)Ke8d8
-        27.(0T27)Ng6e7/(0T27)Kd8e7
-        28.(0T28)Bc1a3/(0T28)d7d6
-        29.(0T29)Ke1g1/(0T29)g7g5
-        30.(0T30)g2g4/(0T30)Rg8f8
-        31.(0T31)Ba3b2/(0T31)e6e5
-        32.(0T32)Rf1e1/(0T32)Ke7e6
-        33.(0T33)Bb2d4/(0T33)Bd5f3
-        34.(0T34)h2h3/(0T34)Rf8f4
-        35.(0T35)Kg1h2/(0T35)Rf4d4
-        36.(0T36)Re1f1/(0T36)Bf3e2
-        37.(0T37)Rf1f2/(0T37)Rd4f4
-        38.(0T38)Rf2>>(0T26)f2/(1T26)Be7f6
-        39.(1T27)Ke1g1/(1T27)Rg8h8
-        40.(1T28)Rf1e1/(1T28)Bf6>>(1T26)f4
-        41.(-1T27)Ke1g1/(-1T27)Be7h4
-        42.(1T29)Nf4>(-1T28)f4/(-1T28)Ke8f7
-        43.(-1T29)Bc1a3/(-1T29)Bh4>(1T29)h2
-        44.(1T30)Kg1f1 (-1T30)Ba3e7/(-1T30)Kf7e7 (1T30)Bh2g1
-        45.(1T31)Kf1g1 (-1T31)Nf4g6/(1T31)Bd5c4 (-1T31)Ke7d8
-        46.(1T32)Re1e6 (-1T32)Rf1e1
+1.(0T1)Ng1f3/(0T1)Ng8f6
+
+2.(0T2)d2d4/(0T2)d7d5
+3.(0T3)c2c3/(0T3)c7c6
+4.(0T4)Bc1f4/(0T4)Bc8f5
+5.(0T5)e2e3/(0T5)e7e6
+6.(0T6)Bf1d3/(0T6)Bf5g6
+7.(0T7)Bd3g6/(0T7)h7g6
+8.(0T8)Nb1d2/(0T8)Bf8d6
+9.(0T9)Bf4d6/(0T9)Qd8d6
+10.(0T10)Nf3e5/(0T10)Nb8d7
+11.(0T11)Nd2f3/(0T11)Rh8h5
+12.(0T12)Ne5d7/(0T12)Qd6d7
+13.(0T13)Qd1e2/(0T13)Qd7d6
+14.(0T14)Nf3e5/(0T14)Rh5e5
+15.(0T15)d4e5/(0T15)Qd6e5
+16.(0T16)Qe2f3/(0T16)d5d4
+17.(0T17)Qf3g3/(0T17)Qe5b5
+18.(0T18)Qg3h4/(0T18)Qb5>>(0T15)e2
+19.(-1T16)Ke1e2/(-1T16)Nf6e4
+20.(0T19)Qh4>>(0T1)h4/(1T1)Ng8f6
+21.(1T2)e2e3/(1T2)d7d5
+22.(1T3)Qh4f6/(1T3)g7f6
+23.(1T4)Qd1h5/(1T4)Bc8e6
+24.(1T5)Bf1b5/(1T5)c7c6
+25.(1T6)Qh5>>(1T4)f7/(2T4)Ke8f7
+26.(2T5)Qd1h5/(2T5)Kf7g8
+27.(2T6)Bf1b5/(1T6)Qd8>>(1T4)d6
+28.(-2T5)Qh5f7/(-2T5)Ke8f7
+29.(-2T6)Bf1b5/(-2T6)Kf7>>(-2T5)f7
+30.(-3T6)Bf1b5
+
         )";
 
     notationStream_ = std::istringstream(notation);
