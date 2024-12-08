@@ -50,6 +50,26 @@ std::vector<Vector> BeforePawn::getValidMoves() const {
         }
     }
 
+
+    std::vector<Vector> takeEntries = {
+        Vector{1, -1 * forward_up, 0, 0},
+        Vector{-1, -1 * forward_up, 0, 0},
+    };
+
+    Vector entryRight = pos + takeEntries[0];
+    Vector entryLeft = pos + takeEntries[1];
+
+    std::shared_ptr<Piece> targetRight = universe_->getPiece(entryRight);
+    std::shared_ptr<Piece> targetLeft = universe_->getPiece(entryLeft);
+
+    if (targetRight && targetRight->getColor() != color) {
+        validMoves.push_back(takeEntries[0]);
+    }
+
+    if (targetLeft && targetLeft->getColor() != color) {
+        validMoves.push_back(takeEntries[1]);
+    }
+
     return validMoves;
 }
 

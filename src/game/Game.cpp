@@ -36,11 +36,15 @@ void Game::initialize() {
 void Game::initializeGame() {
     std::string notation =
         R"(
-        1. e4 / e5
-        2. Qh5 / Qh4
-        3. a3 / (0T3)Qh4>>(0T2)h4~ (>L-1)
-        4. (-1T3)Nf3 / (-1T3)Qg4
-        5. (-1T4)a3 (0T4)Qg5 / (-1T4)Qg4>(0T4)g4
+        1.(0T1)e2e3/(0T1)Ng8f6
+        2.(0T2)b2b4/(0T2)e7e6
+        3.(0T3)Qd1f3/(0T3)Nb8c6
+        4.(0T4)Qf3g3/(0T4)Bf8b4
+        5.(0T5)Ng1f3/(0T5)Rh8g8
+        6.(0T6)Bf1d3/(0T6)Bb4d6
+        7.(0T7)Qg3h4/(0T7)Nc6b4
+        8.(0T8)Nb1a3/(0T8)Nb4d3
+        9.(0T9)c2d3/(0T9)Qd8e7
         )";
 
     notationStream_ = std::istringstream(notation);
