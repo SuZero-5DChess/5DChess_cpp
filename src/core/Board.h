@@ -74,6 +74,7 @@ public:
     std::shared_ptr<Board> clone() const;
 
     std::vector<std::shared_ptr<Piece>> getColorPieces(ColorType color) const;
+    Vector getStartWithTypeColorDest(PieceType type, ColorType color, Vector dest) const;
 
 private:
     Universe* universe_;

@@ -20,8 +20,11 @@ set(SOURCE_FILES
         src/core/Timeline.cpp
         src/core/Universe.cpp
         src/game/Game.cpp
+
         src/Main.cpp
+
         src/utils/Vector.cpp
+        src/utils/Parser.cpp
 )
 
 include_directories(

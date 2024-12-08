@@ -1,13 +1,10 @@
 #include "Game.h"
 
-#include <algorithm>
 #include <regex>
 
 #include <AfterPawn.h>
-#include <Bishop.h>
-#include <Knight.h>
+#include <parser.h>
 #include <Queen.h>
-#include <Rook.h>
 
 Game::Game()
     : currentPlayer_(ColorType::White) {
@@ -32,30 +29,120 @@ void Game::initialize() {
             b1Piece->setValidMoves(b1Piece->getValidMoves());
         }
     }
+
+    initializeGame();
 }
 
-void Game::start() {
-    while (true) {
-        std::vector<Vector> move = readMove();
-        std::shared_ptr<Piece> piece = universe_.getPiece(move[0]);
-        handleMove(piece, move[1]);
+void Game::initializeGame() {
+    std::string notation =
+        R"(
+        1. e4 / e5
+        2. Qh5 / Qh4
+        3. a3 / (0T3)Qh4>>(0T2)h4~ (>L-1)
+        4. (-1T3)Nf3 / (-1T3)Qg4
+        5. (-1T4)a3 (0T4)Qg5 / (-1T4)Qg4>(0T4)g4
+        )";
 
-        if (!canNextTurn()) { continue; }
+    notationStream_ = std::istringstream(notation);
+    round_ = 1;
 
-        std::vector<Vector> remainMoves = getMovablePieces();
-        if (remainMoves.empty()) {
-            universe_.setPresent(universe_.getPresent() + 1);
-            switchPlayer();
-            std::cout << "Changed to Player" << currentPlayer_;
-        } else {
-            if (getYesNo()) {
-                continue;
-            } else {
-                universe_.setPresent(universe_.getPresent() + 1);
-                switchPlayer();
-            }
+    currentPlayer_ = ColorType::White;
+}
+
+void Game::readAndExecuteMove() {
+    std::string line;
+
+    while (std::getline(notationStream_, line)) {
+        line.erase(0, line.find_first_not_of(" \t\r\n"));
+        line.erase(line.find_last_not_of(" \t\r\n") + 1);
+
+        if (line.empty()) continue;
+
+        size_t dotPos = line.find('.');
+        if (dotPos != std::string::npos) {
+            line = line.substr(dotPos + 1);
         }
+
+        size_t slashPos = line.find('/');
+        std::string moveWhite = line;
+        std::string moveBlack = "";
+
+        if (slashPos != std::string::npos) {
+            moveWhite = line.substr(0, slashPos);
+            moveBlack = line.substr(slashPos + 1);
+        }
+
+        moveWhite.erase(0, moveWhite.find_first_not_of(" \t\r\n"));
+        moveWhite.erase(moveWhite.find_last_not_of(" \t\r\n") + 1);
+        moveBlack.erase(0, moveBlack.find_first_not_of(" \t\r\n"));
+        moveBlack.erase(moveBlack.find_last_not_of(" \t\r\n") + 1);
+
+        if (!moveWhite.empty()) {
+            currentPlayer_ = ColorType::White;
+            std::cout << "Player White's move:" <<  moveWhite << std::endl;
+
+            std::vector<std::string> moveList = splitMoves(moveWhite);
+            for (const std::string& moveStr : moveList) {
+                processAndExecuteMove(moveStr);
+            }
+
+            universe_.setPresent(universe_.getPresent() + 1);
+        }
+
+        if (!moveBlack.empty()) {
+            currentPlayer_ = ColorType::Black;
+            std::cout << "Player Black's move:" <<  moveBlack <<  std::endl;
+
+            std::vector<std::string> moveList = splitMoves(moveBlack);
+            for (const std::string& moveStr : moveList) {
+                processAndExecuteMove(moveStr);
+            }
+
+            universe_.setPresent(universe_.getPresent() + 1);
+        }
+        return;
     }
+}
+
+void Game::processAndExecuteMove(const std::string& moveStr) {
+    try {
+        std::vector<Vector> moveVectors = processMove(moveStr, round_, currentPlayer_, std::make_shared<Universe>(universe_));
+
+        if (moveVectors.size() != 2) {
+            std::cout << "Invalid move format in: " << moveStr << std::endl;
+            return;
+        }
+
+        Vector startPos = moveVectors[0];
+        Vector endPos = moveVectors[1];
+
+        std::shared_ptr<Piece> piece = universe_.getPiece(startPos);
+
+        if (!piece) {
+            std::cout << "Invalid move: No piece at the start position (" << startPos << ")." << std::endl;
+            return;
+        }
+
+        if (piece->getColor() != currentPlayer_) {
+            std::cout << "Invalid move: Attempting to move opponent's piece." << std::endl;
+            return;
+        }
+
+        handleMove(piece, endPos);
+    } catch (const std::exception& e) {
+        std::cout << "Skipping annotation or invalid move: " << moveStr << " (" << e.what() << ")" << std::endl;
+        return;
+    }
+}
+
+
+void Game::start() {
+    while (notationStream_) {
+        readAndExecuteMove();
+        round_++;
+    }
+
+    std::cout << "Game over." << std::endl;
 }
 
 void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
@@ -174,18 +261,6 @@ void Game::handleMove(std::shared_ptr<Piece> piece, Vector dest) {
     }
 }
 
-bool Game::canNextTurn() {
-    Vector timelinesIndex = universe_.getActiveTimelines();
-    int present = universe_.getPresent();
-    for (int i = timelinesIndex[0]; i <= timelinesIndex[1]; i++) {
-        std::shared_ptr<Timeline> iterTimeline = universe_.getTimeline(i);
-        if (iterTimeline->getLength() + iterTimeline->getOffset() - 1 == present) {
-            return false;
-        }
-    }
-    return true;
-}
-
 std::vector<Vector> Game::getMovablePieces() {
     std::vector<Vector> movablePieces;
 
@@ -211,84 +286,4 @@ std::vector<Vector> Game::getMovablePieces() {
 
 void Game::switchPlayer() {
     currentPlayer_ = (currentPlayer_ == ColorType::White) ? ColorType::Black : ColorType::White;
-}
-
-std::vector<Vector> Game::readMove() {
-    // (a, b, c, d)->(e, f, g, h)
-    std::regex pattern(R"(\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)\s*->\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\))");
-    std::string input;
-    std::smatch match;
-
-    std::vector<Vector> movablePieces = getMovablePieces();
-
-    for (const auto& element: movablePieces) {
-        std::cout << element << std::endl;
-    }
-
-    while (true) {
-        std::cout << "Enter input in the format (a,b,c,d)->(e,f,g,h): ";
-        std::getline(std::cin, input);
-
-        if (std::regex_match(input, match, pattern)) {
-            int a = std::stoi(match[1].str());
-            int b = std::stoi(match[2].str());
-            int c = std::stoi(match[3].str());
-            int d = std::stoi(match[4].str());
-
-            Vector startPosition = Vector{a, b, c, d};
-
-            if (std::find(
-                movablePieces.begin(),
-                movablePieces.end(),
-                startPosition
-            ) == movablePieces.end()) {
-                std::cout << "Invalid start position";
-                continue;
-            }
-
-            std::shared_ptr<Piece> piece = universe_.getPiece(startPosition);
-
-            int e = std::stoi(match[5].str());
-            int f = std::stoi(match[6].str());
-            int g = std::stoi(match[7].str());
-            int h = std::stoi(match[8].str());
-
-            Vector endDirection = Vector{e, f, g, h} - startPosition;
-
-            std::vector<Vector> dests = piece->readValidMoves();
-
-            if (std::find(
-                dests.begin(),
-                dests.end(),
-                endDirection
-                ) == dests.end()) {
-                std::cout << "Invalid end position";
-                continue;
-            }
-
-            return {Vector{a, b, c, d}, Vector{e, f, g, h}};
-        } else {
-            std::cout << "Invalid input. Please try again." << std::endl;
-        }
-    }
-}
-
-bool Game::getYesNo() {
-    std::string input;
-    while (true) {
-        std::cout << "you can continue, Y/N? ";
-        std::getline(std::cin, input);
-
-        if (!input.empty()) {
-            char firstChar = std::tolower(input[0]);
-
-            if (firstChar == 'y') {
-                return true;
-            } else if (firstChar == 'n') {
-                return false;
-            }
-        }
-
-        std::cout << "Invalid input. Please enter Y or N." << std::endl;
-    }
 }

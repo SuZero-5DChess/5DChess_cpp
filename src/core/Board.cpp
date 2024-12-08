@@ -1,5 +1,5 @@
 #include <Universe.h>
-
+#include <algorithm>
 #include <utility>
 
 Board::Board(Universe* universe, Vector zw): universe_(universe) {
@@ -94,5 +94,33 @@ std::vector<std::shared_ptr<Piece>> Board::getColorPieces(ColorType color) const
     }
 
     return pieces;
+}
+
+Vector Board::getStartWithTypeColorDest(PieceType type, ColorType color, Vector dest) const {
+    for (int x = 0; x < BOARD_SIZE; x++) {
+        for (int y = 0; y < BOARD_SIZE; y++) {
+            std::shared_ptr<Piece> piece = getPiece(x, y);
+
+            if (type == PieceType::AllPawn) {
+                if (!piece || piece->getColor() != color || (
+                    piece->getType() != PieceType::BeforePawn
+                    && piece->getType() != PieceType::AfterPawn
+                )) { continue; }
+            } else {
+                if (!piece || piece->getType() != type || piece->getColor() != color) { continue; }
+            }
+
+            std::vector<Vector> dests = piece->getValidMoves();
+            if (std::find(
+                dests.begin(),
+                dests.end(),
+                dest - piece->getXYZW()
+                ) != dests.end()
+            ) {
+                return piece->getXYZW();
+            }
+        }
+    }
+    return Vector{-1, -1, -1, -1};
 }
 

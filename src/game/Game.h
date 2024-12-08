@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 #include "Universe.h"
 
 class Game {
@@ -8,20 +10,24 @@ public:
     ~Game();
 
     void initialize();
+    void initializeGame();
+
+    void readAndExecuteMove();
+    void processAndExecuteMove(const std::string& moveStr);
 
     void start();
     void handleMove(std::shared_ptr<Piece> piece, Vector dest);
 
-    bool canNextTurn();
-
     std::vector<Vector> getMovablePieces();
-
-    std::vector<Vector> readMove();
-    bool getYesNo();
 
 private:
     Universe universe_;
     ColorType currentPlayer_;
+    int round_;
+
+    std::vector<std::vector<Vector>> parsedMoves;
+    size_t currentMoveIndex = 0;
+    std::istringstream notationStream_;
 
     void switchPlayer();
 };

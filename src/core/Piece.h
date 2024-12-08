@@ -9,6 +9,7 @@ class Universe;
 enum class PieceType {
     BeforePawn,
     AfterPawn,
+    AllPawn,
     Rook,
     Knight,
     Bishop,
